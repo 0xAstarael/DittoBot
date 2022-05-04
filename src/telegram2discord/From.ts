@@ -9,6 +9,7 @@ interface From {
 	firstName: string;
 	lastName?: string;
 	username?: string;
+	fullname?: string;
 }
 
 /**
@@ -26,7 +27,8 @@ export function createFromObj(firstName: string, lastName: string | undefined, u
 	return {
 		firstName,
 		lastName,
-		username
+		username,
+		(firstName + ' ' + lastName).trim()
 	};
 }
 
@@ -73,15 +75,15 @@ export function createFromObjFromChat(chat: Record<string, any>) {
 /**
  * Makes a display name out of a from object
  *
- * @param useFirstNameInsteadOfUsername Whether or not to always use the first name instead of the username
+ * @param useFullNameInsteadOfUsername
  * @param from The from object
  *
  * @returns The display name
  */
-export function makeDisplayName(useFirstNameInsteadOfUsername: boolean, from: From) {
+export function makeDisplayName(useFullNameInsteadOfUsername: boolean, from: From) {
 	return R.ifElse(
-		from => useFirstNameInsteadOfUsername || R.isNil(from.username),
-		R.prop("firstName"),
+		from => useFullNameInsteadOfUsername || R.isNil(from.username),
+		R.prop("fullName"),
 		R.prop("username")
 	)(from);
 }
