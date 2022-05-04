@@ -81,7 +81,7 @@ export function createFromObjFromChat(chat: Record<string, any>) {
 export function makeDisplayName(useFullNameInsteadOfUsername: boolean, from: From) {
 	return R.ifElse(
 		from => useFullNameInsteadOfUsername || R.isNil(from.username),
-		R.prop("firstName").toString().concat(R.prop("lastName").toString()),
+		R.prop("firstName").concat(R.prop("lastName").toString()),
 		R.prop("username")
 	)(from);
 }
