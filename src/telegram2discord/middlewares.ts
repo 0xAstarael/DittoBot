@@ -502,7 +502,7 @@ async function addPreparedObj(ctx: TediCrossContext, next: () => void) {
 	ctx.tediCross.prepared = await Promise.all(
 		R.map(async (bridge: Bridge) => {
 			// Get the name of the sender of this message
-			const senderName = makeDisplayName(ctx.TediCross.settings.telegram.useFirstNameInsteadOfUsername, tc.from);
+			const senderName = makeDisplayName(ctx.TediCross.settings.telegram.useFullNameInsteadOfUsername, tc.from);
 
 			// Make the header
 			// WARNING! Butt-ugly code! If you see a nice way to clean this up, please do it
@@ -510,7 +510,7 @@ async function addPreparedObj(ctx: TediCrossContext, next: () => void) {
 				// Get the name of the original sender, if this is a forward
 				const originalSender = R.isNil(tc.forwardFrom)
 					? null
-					: makeDisplayName(ctx.TediCross.settings.telegram.useFirstNameInsteadOfUsername, tc.forwardFrom);
+					: makeDisplayName(ctx.TediCross.settings.telegram.useFullNameInsteadOfUsername, tc.forwardFrom);
 				// Get the name of the replied-to user, if this is a reply
 				const repliedToName = R.isNil(tc.replyTo)
 					? null
@@ -522,7 +522,7 @@ async function addPreparedObj(ctx: TediCrossContext, next: () => void) {
 							),
 							R.compose(
 								R.partial(makeDisplayName, [
-									ctx.TediCross.settings.telegram.useFirstNameInsteadOfUsername
+									ctx.TediCross.settings.telegram.useFullNameInsteadOfUsername
 								]),
 								//@ts-ignore
 								R.prop("originalFrom")
