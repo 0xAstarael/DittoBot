@@ -8,6 +8,7 @@ import { Message, User } from "telegraf/typings/core/types/typegram";
 interface From {
 	firstName: string;
 	lastName?: string;
+	fullName?: string;
 	username?: string;
 }
 
@@ -26,6 +27,7 @@ export function createFromObj(firstName: string, lastName: string | undefined, u
 	return {
 		firstName,
 		lastName,
+		firstName,
 		username
 	};
 }
@@ -81,7 +83,7 @@ export function createFromObjFromChat(chat: Record<string, any>) {
 export function makeDisplayName(useFullNameInsteadOfUsername: boolean, from: From) {
 	return R.ifElse(
 		from => useFullNameInsteadOfUsername || R.isNil(from.username),
-		R.prop("firstName").toString().concat(R.prop("lastName")),
+		R.prop("fullName"),
 		R.prop("username")
 	)(from);
 }
