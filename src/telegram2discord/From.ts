@@ -24,10 +24,11 @@ interface From {
  * @memberof From
  */
 export function createFromObj(firstName: string, lastName: string | undefined, username: string | undefined): From {
+	var fullName = firstName.concat(lastName);
 	return {
 		firstName,
 		lastName,
-		firstName,
+		fullName,
 		username
 	};
 }
