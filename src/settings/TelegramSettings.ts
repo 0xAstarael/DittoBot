@@ -23,7 +23,7 @@ export class TelegramSettings {
 	 *
 	 * @param settings The raw settings object to use
 	 * @param settings.token The bot token to use. Set to {@link TelegramSettings#GET_TOKEN_FROM_ENVIRONMENT} to read the token from the TELEGRAM_BOT_TOKEN environment variable
-	 * @param settings.useFirstNameInsteadOfUsername Whether or not to use a Telegram user's first name instead of the username when displaying the name in the Discord messages
+	 * @param settings.useFullNameInsteadOfUsername Whether or not to use a Telegram user's first name instead of the username when displaying the name in the Discord messages
 	 * @param settings.colonAfterSenderName Whether or not to put a colon after the name of the sender in messages from Discord to Telegram. If true, the name is displayed `Name:`. If false, it is displayed `Name`
 	 * @param settings.skipOldMessages Whether or not to skip through all previous messages cached from the telegram-side and start processing new messages ONLY
 	 * @param settings.sendEmojiWithStickers Whether or not to send the corresponding emoji when relaying stickers to Discord
@@ -38,7 +38,7 @@ export class TelegramSettings {
 		this._token = settings.token;
 
 		/** Whether or not to use a Telegram user's first name instead of the username when displaying the name in the Discord messages */
-		this.useFirstNameInsteadOfUsername = settings.useFirstNameInsteadOfUsername;
+		this.useFullNameInsteadOfUsername = settings.useFullNameInsteadOfUsername;
 
 		/** Whether or not to put a colon after the name of the sender in messages from Discord to Telegram. If true, the name is displayed `Name:`. If false, it is displayed `Name` */
 		this.colonAfterSenderName = settings.colonAfterSenderName;
@@ -88,9 +88,9 @@ export class TelegramSettings {
 			throw new Error("`settings.token` must be a string");
 		}
 
-		// Check that useFirstNameInsteadOfUsername is a boolean
-		if (Boolean(settings.useFirstNameInsteadOfUsername) !== settings.useFirstNameInsteadOfUsername) {
-			throw new Error("`settings.useFirstNameInsteadOfUsername` must be a boolean");
+		// Check that useFullNameInsteadOfUsername is a boolean
+		if (Boolean(settings.useFullNameInsteadOfUsername) !== settings.useFullNameInsteadOfUsername) {
+			throw new Error("`settings.useFullNameInsteadOfUsername` must be a boolean");
 		}
 
 		// Check that colonAfterSenderName is a boolean
@@ -118,7 +118,7 @@ export class TelegramSettings {
 	static get DEFAULTS() {
 		return {
 			token: TelegramSettings.GET_TOKEN_FROM_ENVIRONMENT,
-			useFirstNameInsteadOfUsername: false,
+			useFullNameInsteadOfUsername: false,
 			colonAfterSenderName: false,
 			skipOldMessages: true,
 			sendEmojiWithStickers: true
