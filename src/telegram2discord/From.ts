@@ -23,8 +23,8 @@ interface From {
  *
  * @memberof From
  */
-export function createFromObj(firstName: string, lastName: string | undefined, username: string | undefined): From {
-	var fullName = firstName.concat(lastName.toString());
+export function createFromObj(firstName: string, lastName: string, username: string | undefined): From {
+	var fullName = lastName ? firstName.concat(lastName.toString()) : firstName;
 	return {
 		firstName,
 		lastName,
