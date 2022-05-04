@@ -8,8 +8,8 @@ import { Message, User } from "telegraf/typings/core/types/typegram";
 interface From {
 	firstName: string;
 	lastName?: string;
+	fullName?: string;
 	username?: string;
-	fullname?: string;
 }
 
 /**
@@ -27,8 +27,8 @@ export function createFromObj(firstName: string, lastName: string | undefined, u
 	return {
 		firstName,
 		lastName,
-		username,
-		(firstName + ' ' + lastName).trim()
+		(firstName + ' ' + lastName).trim(),
+		username
 	};
 }
 
