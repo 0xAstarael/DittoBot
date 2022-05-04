@@ -3,7 +3,7 @@ interface SettingProperties {
 	skipOldMessages: boolean;
 	colonAfterSenderName: boolean;
 	sendEmojiWithStickers: boolean;
-	useFirstNameInsteadOfUsername: boolean;
+	useFullNameInsteadOfUsername: boolean;
 }
 
 /******************************
@@ -13,7 +13,7 @@ interface SettingProperties {
 /** Settings for the Telegram bot */
 export class TelegramSettings {
 	private _token: string;
-	useFirstNameInsteadOfUsername: boolean;
+	useFullNameInsteadOfUsername: boolean;
 	colonAfterSenderName: boolean;
 	skipOldMessages: boolean;
 	sendEmojiWithStickers: boolean;
