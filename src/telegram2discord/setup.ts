@@ -110,6 +110,7 @@ export function setup(
 			tgBot.on("left_chat_member", middlewares.removeBridgesIgnoringLeaveMessages);
 			tgBot.on("new_chat_members", newChatMembers);
 			tgBot.on("left_chat_member", leftChatMember);
+			tgBot.on("pinned_message", middlewares.removePinnedMessageNotifications);
 			tgBot.use(middlewares.addFromObj);
 			tgBot.use(middlewares.addReplyObj);
 			tgBot.use(middlewares.addForwardFrom);
