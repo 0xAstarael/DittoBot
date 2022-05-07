@@ -1,5 +1,6 @@
 import { md2html } from "./md2html";
 import { MessageMap } from "../MessageMap";
+import { DittoMessage } from "../DittoMessage";
 import { LatestDiscordMessageIds } from "./LatestDiscordMessageIds";
 import { handleEmbed } from "./handleEmbed";
 import { relayOldMessages } from "./relayOldMessages";
@@ -166,7 +167,8 @@ export function setup(
 							MessageMap.DISCORD_TO_TELEGRAM,
 							bridge,
 							message.id,
-							tgMessage.message_id.toString()
+							tgMessage.message_id.toString(),
+							textToSend
 						);
 					} catch (err) {
 						logger.error(`[${bridge.name}] Telegram did not accept an attachment:`, err);
@@ -213,7 +215,8 @@ export function setup(
 							MessageMap.DISCORD_TO_TELEGRAM,
 							bridge,
 							message.id,
-							tgMessage.message_id.toString()
+							tgMessage.message_id.toString(),
+							textToSend
 						);
 					} catch (err) {
 						logger.error(`[${bridge.name}] Telegram did not accept a message:`, err);
@@ -256,11 +259,12 @@ export function setup(
 		bridgeMap.fromDiscordChannelId(Number(newMessage.channel.id)).forEach(async bridge => {
 			try {
 				// Get the corresponding Telegram message ID
-				const [tgMessageId] = messageMap.getCorresponding(
+				const DittoMessage = messageMap.getCorresponding(
 					MessageMap.DISCORD_TO_TELEGRAM,
 					bridge,
 					newMessage.id
 				);
+				const tgMessageId = DittoMessage._telegramMessageId;
 
 				// Get info about the sender
 				const senderName =
@@ -282,7 +286,7 @@ export function setup(
 			}
 		});
 	});
-
+/*
 	dcBot.on("channelPinsUpdate", async(channel, time) => {
 		// Check if pinned message comes from the correct chat
 		const bridges = bridgeMap.fromDiscordChannelId(Number(channel.id));
@@ -317,7 +321,7 @@ export function setup(
 			});
 		}
 	});
-
+*/
 	// Listen for deleted messages
 	function onMessageDelete(message: Message): void {
 		// Check if it is a relayed message
@@ -331,16 +335,15 @@ export function setup(
 			}
 
 			try {
-				// Get the corresponding Telegram message IDs
-				const tgMessageIds = (
-					isFromTelegram
-						? messageMap.getCorrespondingReverse(MessageMap.DISCORD_TO_TELEGRAM, bridge, message.id)
-						: messageMap.getCorresponding(MessageMap.DISCORD_TO_TELEGRAM, bridge, message.id)
-				) as number[];
-				// Try to delete them
-				await Promise.all(
-					tgMessageIds.map(tgMessageId => tgBot.telegram.deleteMessage(bridge.telegram.chatId, tgMessageId))
+				// Get the corresponding Telegram message ID
+				const DittoMessage = messageMap.getCorresponding(
+					MessageMap.DISCORD_TO_TELEGRAM,
+					bridge,
+					message.id
 				);
+				const tgMessageId = DittoMessage._telegramMessageId;
+
+				await tgBot.telegram.deleteMessage(bridge.telegram.chatId, tgMessageId);
 			} catch (err) {
 				logger.error(`[${bridge.name}] Could not delete Telegram message:`, err);
 				logger.warn(

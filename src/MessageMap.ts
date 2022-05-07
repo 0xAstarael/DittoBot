@@ -1,5 +1,6 @@
 import moment from "moment";
 import { Bridge } from "./bridgestuff/Bridge";
+import { DittoMessage } from "./DittoMessage";
 
 type Direction = "d2t" | "t2d";
 
@@ -20,28 +21,31 @@ export class MessageMap {
 	 * @param fromId Message ID to map from, i.e. the ID of the message the bot received
 	 * @param toId	Message ID to map to, i.e. the ID of the message the bot sent
 	 */
-	insert(direction: Direction, bridge: Bridge, fromId: string, toId: string) {
+	insert(direction: Direction, bridge: Bridge, fromId: string, toId: string, message: string | null) {
 		// Get/create the entry for the bridge
-		let keyToIdsMap = this._map.get(bridge);
-		if (keyToIdsMap === undefined) {
-			keyToIdsMap = new Map();
-			this._map.set(bridge, keyToIdsMap);
+		let keyToDittoMessageMap = this._map.get(bridge);
+		if (keyToDittoMessageMap === undefined) {
+			keyToDittoMessageMap = new Map();
+			this._map.set(bridge, keyToDittoMessageMap);
 		}
 
-		// Generate the key and get the corresponding IDs
+		// Generate the key and get the corresponding Messages
 		const key = `${direction} ${fromId}`;
-		let toIds = keyToIdsMap.get(key);
-		if (toIds === undefined) {
-			toIds = new Set();
-			keyToIdsMap.set(key, toIds);
-		}
+		const reverseKey = direction === 'd2t' ? `t2d ${toId}` : `d2t ${toId}`;
 
-		// Shove the new ID into it
-		toIds.add(toId);
+		let dittoMessageForKey = keyToDittoMessageMap.get(key);
+		if (dittoMessageForKey === undefined) {
+			dittoMessageForKey = new DittoMessage(key,direction,fromId,toId,message);
+			keyToDittoMessageMap.set(key, dittoMessageForKey);
+
+			// Create the opposite direction mapping
+			keyToDittoMessageMap.set(reverseKey, dittoMessageForKey);
+		}
 
 		// Start a timeout removing it again after 24 hours
 		setTimeout(() => {
-			keyToIdsMap.delete(key);
+			keyToDittoMessageMap.delete(key);
+			keyToDittoMessageMap.delete(reverseKey);
 		}, moment.duration(24, "hours").asMilliseconds());
 	}
 
@@ -57,22 +61,23 @@ export class MessageMap {
 	getCorresponding(direction: Direction, bridge: Bridge, fromId: string) {
 		try {
 			// Get the key-to-IDs map
-			const keyToIdsMap = this._map.get(bridge);
+			const keyToDittoMessageMap = this._map.get(bridge);
 
 			// Create the key
 			const key = `${direction} ${fromId}`;
 
 			// Extract the IDs
-			const toIds = keyToIdsMap.get(key);
+			const DittoMessage = keyToDittoMessageMap.get(key);
 
 			// Return the ID
-			return [...toIds];
+			return DittoMessage;
 		} catch (err) {
 			// Unknown message ID. Don't do anything
 			return [];
 		}
 	}
 
+/*
 	getCorrespondingReverse(_direction: string, bridge: Bridge, toId: string) {
 		// The ID to return
 		let fromId = [];
@@ -88,6 +93,7 @@ export class MessageMap {
 
 		return fromId;
 	}
+*/
 
 	/** Constant indicating direction discord to telegram */
 	static get DISCORD_TO_TELEGRAM(): "d2t" {
