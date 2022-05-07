@@ -30,5 +30,5 @@ export const fetchDiscordChannel = R.curry((dcBot: Client, bridge) => {
 	return dcBot.channels.fetch(channelId).messages.catch((err: Error) => {
 		console.error(`Could not find Discord MessageManager for channel ${channelId} in bridge ${bridge.name}: ${err.message}`);
 		throw err;
-	}) as unknown as Promise<TextChannel>;
+	}) as unknown as Promise<MessageManager>;
 });
