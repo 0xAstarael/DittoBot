@@ -296,7 +296,7 @@ export function setup(
 					const pinnedMessages = await channel.messages.fetchPinned();
 
 					pinnedMessages
-						.filter(message => message.editedTimestamp >= time)
+						.filter(message => message!.editedTimestamp >= time.getTime())
 						.forEach(async message => {
 							// Check if it is a relayed message
 							const isFromTelegram = message.author.id === dcBot.user?.id;
