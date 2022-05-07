@@ -149,7 +149,10 @@ export const leftChatMember = createMessageHandler((ctx: TediCrossContext, bridg
 				ctx.tediCross.message.pinned_message
 			);
 
-			console.log(dcMessageId);
+			console.log(ctx.tediCross.message);
+
+			// Wait for the Discord bot to become ready
+			await ctx.TediCross.dcBot.ready;
 
 			// Get the messageManager and message to pin
 			const messageManager = (await fetchDiscordChannel(ctx.TediCross.dcBot, bridge)).messages;
@@ -174,6 +177,9 @@ export const leftChatMember = createMessageHandler((ctx: TediCrossContext, bridg
 				bridge,
 				ctx.tediCross.message.pinned_message
 			);
+
+			// Wait for the Discord bot to become ready
+			await ctx.TediCross.dcBot.ready;
 
 			// Get the messageManager and message to unpin
 			const messageManager = (await fetchDiscordChannel(ctx.TediCross.dcBot, bridge)).messages;
@@ -254,7 +260,6 @@ export const relayMessage = (ctx: TediCrossContext) =>
 				ctx.tediCross.messageId,
 				dcMessage?.id
 			);
-			console.log(ctx.TediCross.messageMap);
 		} catch (err: any) {
 			console.error(`Could not relay a message to Discord on bridge ${prepared.bridge.name}: ${err.message}`);
 		}
