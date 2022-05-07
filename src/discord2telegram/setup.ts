@@ -284,6 +284,7 @@ export function setup(
 	});
 
 	dcBot.on("channelPinsUpdate", async(channel, time) => {
+		console.log("here");
 		// Check if pinned message comes from the correct chat
 		const bridges = bridgeMap.fromDiscordChannelId(Number(channel.id));
 		if (!R.isEmpty(bridges)) {
