@@ -266,6 +266,12 @@ export function setup(
 				);
 				const tgMessageId = DittoMessage._telegramMessageId;
 
+				const DittoMessage_2 = messageMap.getCorresponding(
+					MessageMap.TELEGRAM_TO_DISCORD,
+					bridge,
+					tgMessageId
+				);
+
 				// Get info about the sender
 				const senderName =
 					(useNickname && newMessage.member ? newMessage.member.displayName : newMessage.author?.username) +
@@ -281,6 +287,11 @@ export function setup(
 				await tgBot.telegram.editMessageText(bridge.telegram.chatId, tgMessageId, undefined, textToSend, {
 					parse_mode: "HTML"
 				});
+
+				DittoMessage.message = textToSend;
+
+				console.log(DittoMessage);
+				console.log(DittoMessage_2);
 			} catch (err) {
 				logger.error(`[${bridge.name}] Could not edit Telegram message:`, err);
 			}

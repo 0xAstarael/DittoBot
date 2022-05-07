@@ -29,23 +29,25 @@ export class MessageMap {
 			this._map.set(bridge, keyToDittoMessageMap);
 		}
 
-		// Generate the key and get the corresponding Messages
-		const key = `${direction} ${fromId}`;
-		const reverseKey = direction === 'd2t' ? `t2d ${toId}` : `d2t ${toId}`;
+		let [discordMessageId,telegramMessageId] = direction === 'd2t' ? [fromId, toId] : [toId, fromId];
 
-		let dittoMessageForKey = keyToDittoMessageMap.get(key);
+		// Generate the key and get the corresponding Messages
+		const d2tKey = `dt2 ${discordMessageId}`;
+		const t2dKey = `t2d ${telegramMessageId}`;
+
+		let dittoMessageForKey = keyToDittoMessageMap.get(d2tKey);
 		if (dittoMessageForKey === undefined) {
-			dittoMessageForKey = new DittoMessage(key,direction,fromId,toId,message);
-			keyToDittoMessageMap.set(key, dittoMessageForKey);
+			dittoMessageForKey = new DittoMessage(direction,fromId,toId,message);
+			keyToDittoMessageMap.set(d2tKey, dittoMessageForKey);
 
 			// Create the opposite direction mapping
-			keyToDittoMessageMap.set(reverseKey, dittoMessageForKey);
+			keyToDittoMessageMap.set(t2dKey, dittoMessageForKey);
 		}
 
 		// Start a timeout removing it again after 24 hours
 		setTimeout(() => {
-			keyToDittoMessageMap.delete(key);
-			keyToDittoMessageMap.delete(reverseKey);
+			keyToDittoMessageMap.delete(d2tKey);
+			keyToDittoMessageMap.delete(t2dKey);
 		}, moment.duration(24, "hours").asMilliseconds());
 	}
 
