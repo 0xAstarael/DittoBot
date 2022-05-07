@@ -290,6 +290,8 @@ export const relayMessage = (ctx: TediCrossContext) =>
  * @param ctx	The Telegraf context
  */
 export const handleEdits = createMessageHandler(async (ctx: TediCrossContext, bridge: any) => {
+	console.log(ctx);
+
 	// Function to "delete" a message on Discord
 	const del = async (ctx: TediCrossContext, bridge: any) => {
 		try {
@@ -323,7 +325,6 @@ export const handleEdits = createMessageHandler(async (ctx: TediCrossContext, br
 	const edit = async (ctx: TediCrossContext, bridge: any) => {
 		try {
 			const tgMessage = ctx.tediCross.message;
-			console.log(tgMessage);
 
 			// Find the ID of this message on Discord
 			const dittoMessage = ctx.TediCross.messageMap.getCorresponding(
