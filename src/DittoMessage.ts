@@ -34,6 +34,8 @@ export class DittoMessage {
         this._messageId = messageId;
 
         this._message = message;
+
+        console.log(this);
 	}
 
     get DiscordMessageId(): string {
