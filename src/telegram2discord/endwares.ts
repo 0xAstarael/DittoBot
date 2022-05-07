@@ -214,6 +214,7 @@ export const leftChatMember = createMessageHandler((ctx: TediCrossContext, bridg
 	) {
 		await pin(ctx, bridge);
 	} else {
+		console.log("unpin");
 		await unpin(ctx, bridge);
 	}
 });
@@ -345,6 +346,8 @@ export const handleEdits = createMessageHandler(async (ctx: TediCrossContext, br
 
 				// Send them in serial, with the attachment first, if there is one
 				await dcMessage.edit({ content: messageText, attachment: prepared.attachment } as MessageEditOptions);
+
+				dittoMessage.message(messageText);
 			})(ctx.tediCross.prepared);
 		} catch (err: any) {
 			// Log it
