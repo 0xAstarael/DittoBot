@@ -162,6 +162,8 @@ export const leftChatMember = createMessageHandler((ctx: TediCrossContext, bridg
 			// Get the messageManager and message to pin
 			const messageManager = (await fetchDiscordChannel(ctx.TediCross.dcBot, bridge)).messages;
 			const message = await messageManager.fetch(dcMessageId);
+			console.log(dittoMessage);
+			console.log(message);
 
 			// Pin it on Discord
 			const dp = messageManager.pin(message);

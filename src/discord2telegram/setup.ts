@@ -251,7 +251,6 @@ export function setup(
 
 	// Listen for message edits
 	dcBot.on("messageUpdate", async (_oldMessage, newMessage) => {
-		console.log("message Update");
 		// Don't do anything with the bot's own messages
 		if (newMessage.author?.id === dcBot.user?.id) {
 			return;
@@ -272,6 +271,12 @@ export function setup(
 				if (!dittoMessage.pinned && newMessage.pinned) {
 					tgBot.telegram.pinChatMessage(bridge.telegram.chatId, tgMessageId);
 					dittoMessage.pinned = true;
+				}
+
+				// Check if this is an unpin update
+				if (dittoMessage.pinned && !newMessage.pinned) {
+					tgBot.telegram.unpinChatMessage(bridge.telegram.chatId, tgMessageId);
+					dittoMessage.pinned = false;
 				}
 
 				// Get info about the sender
@@ -297,49 +302,6 @@ export function setup(
 		});
 	});
 
-	// Since pinned messages are considered messageUpdates, we only need to check channelPinsUpdate for unpinning.
-/*	dcBot.on("channelPinsUpdate", async(channel, time) => {
-		console.log("pin stuff");
-		// Check if pinned message comes from the correct chat
-		const bridges = bridgeMap.fromDiscordChannelId(Number(channel.id));
-		if (!R.isEmpty(bridges)) {
-			bridges.forEach(async bridge => {
-				try {
-					// Ignore it if cross pin is disabled
-					if (!bridge.discord.crossPinOnTelegram) {
-						return;
-					}
-					const pinnedMessages = await channel.messages.fetchPinned();
-
-					pinnedMessages
-//						.filter(message => message.editedTimestamp! >= moment(time))
-						.forEach(async message => {
-							// Get the corresponding Telegram message ID
-							const dittoMessage = messageMap.getCorresponding(
-								MessageMap.DISCORD_TO_TELEGRAM,
-								bridge,
-								message.id
-							);
-
-							if (!dittoMessage) {
-								return;
-							}
-
-							const tgMessageId = dittoMessage.telegramMessageId;
-
-							if (dittoMessage.pinned) {
-								tgBot.telegram.pinChatMessage(bridge.telegram.chatId, tgMessageId);
-							}
-
-							dittoMessage.pinned = true;
-						});
-				} catch (err) {
-					logger.error(`[${bridge.name}] Could not pin Telegram message:`, err);
-				}
-			});
-		}
-	});
-*/
 	// Listen for deleted messages
 	function onMessageDelete(message: Message): void {
 		// Check if it is a relayed message
