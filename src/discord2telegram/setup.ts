@@ -264,6 +264,9 @@ export function setup(
 					bridge,
 					newMessage.id
 				);
+
+				console.log(dittoMessage);
+
 				const tgMessageId = dittoMessage.telegramMessageId;
 
 				const dittoMessage_2 = messageMap.getCorresponding(
