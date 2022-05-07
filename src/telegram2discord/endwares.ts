@@ -149,6 +149,7 @@ export const leftChatMember = createMessageHandler((ctx: TediCrossContext, bridg
 				bridge,
 				ctx.tediCross.message.pinned_message.message_id
 			);
+			console.log(dittoMessage);
 
 			if (!dittoMessage || dittoMessage.pinned) {
 				return;
@@ -261,13 +262,13 @@ export const relayMessage = (ctx: TediCrossContext) =>
 			else {
 				dcMessage = await channel.send(displayChunk);
 			}
+
 			// Send the rest in serial
 			/*dcMessage = await R.reduce(
 				(p, chunk) => p.then(() => channel.send(chunk)),
 				Promise.resolve(dcMessage),
 				chunks
 			);*/
-
 
 			// Make the mapping so future edits can work XXX Only the last chunk is considered
 			ctx.TediCross.messageMap.insert(
