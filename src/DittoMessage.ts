@@ -33,6 +33,15 @@ export class DittoMessage {
         this._message = message;
 	}
 
+
+    get pinned(): boolean {
+        return this._pinned;
+    }
+
+    set pinned(isPinned: boolean) {
+        this._pinned = isPinned;
+    }
+
     get discordMessageId(): string {
         return this._discordMessageId;
     }

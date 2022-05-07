@@ -1,3 +1,4 @@
+import moment from "moment";
 import { md2html } from "./md2html";
 import { MessageMap } from "../MessageMap";
 import { DittoMessage } from "../DittoMessage";
@@ -290,6 +291,7 @@ export function setup(
 	});
 
 	dcBot.on("channelPinsUpdate", async(channel, time) => {
+		console.log("pin stuff");
 		// Check if pinned message comes from the correct chat
 		const bridges = bridgeMap.fromDiscordChannelId(Number(channel.id));
 		if (!R.isEmpty(bridges)) {
@@ -302,7 +304,7 @@ export function setup(
 					const pinnedMessages = await channel.messages.fetchPinned();
 
 					pinnedMessages
-						//.filter(message => message.editedTimestamp! >= time.getTime())
+//						.filter(message => message.editedTimestamp! >= moment(time))
 						.forEach(async message => {
 							// Get the corresponding Telegram message ID
 							const dittoMessage = messageMap.getCorresponding(
@@ -310,10 +312,18 @@ export function setup(
 								bridge,
 								message.id
 							);
-							console.log(dittoMessage);
+
+							if (!dittoMessage) {
+								return;
+							}
+
 							const tgMessageId = dittoMessage.telegramMessageId;
 
-							tgBot.telegram.pinChatMessage(bridge.telegram.chatId, tgMessageId)
+							if (dittoMessage.pinned) {
+								tgBot.telegram.pinChatMessage(bridge.telegram.chatId, tgMessageId);
+							}
+
+							dittoMessage.pinned = true;
 						});
 				} catch (err) {
 					logger.error(`[${bridge.name}] Could not pin Telegram message:`, err);
