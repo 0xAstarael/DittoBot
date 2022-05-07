@@ -8,7 +8,7 @@ import { MessageMap } from "../MessageMap";
 import { BridgeMap } from "../bridgestuff/BridgeMap";
 import { Settings } from "../settings/Settings";
 import * as telegraf from "telegraf";
-import { chatinfo, handleEdits, leftChatMember, newChatMembers, relayMessage, TediCrossContext } from "./endwares";
+import { chatinfo, handleEdits, leftChatMember, newChatMembers, pinnedMessage, relayMessage, TediCrossContext } from "./endwares";
 
 /***********
  * Helpers *
@@ -110,7 +110,6 @@ export function setup(
 			tgBot.on("left_chat_member", middlewares.removeBridgesIgnoringLeaveMessages);
 			tgBot.on("new_chat_members", newChatMembers);
 			tgBot.on("left_chat_member", leftChatMember);
-			tgBot.on("pinned_message", middlewares.removePinnedMessageNotifications);
 			tgBot.use(middlewares.addFromObj);
 			tgBot.use(middlewares.addReplyObj);
 			tgBot.use(middlewares.addForwardFrom);
@@ -120,6 +119,7 @@ export function setup(
 			tgBot.use(middlewares.addPreparedObj);
 
 			// Apply endwares
+			tgBot.on("pinned_message", pinnedMessage);
 			tgBot.on(["edited_message", "edited_channel_post"], handleEdits);
 			tgBot.use(relayMessage as any);
 

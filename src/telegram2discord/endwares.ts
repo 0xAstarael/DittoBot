@@ -132,6 +132,72 @@ export const leftChatMember = createMessageHandler((ctx: TediCrossContext, bridg
 });
 
 /**
+ * Handles message being pinned
+ *
+ * @param ctx The Telegraf context
+ * @param ctx.tediCross The TediCross context of the message
+ * @param ctx.tediCross.message The Telegram message pinned
+ * @param ctx.TediCross The global TediCross context of the message
+ */
+ export const pinnedMessage = createMessageHandler(async (ctx: TediCrossContext, bridge: any) => {
+	const pin = async (ctx: TediCrossContext, bridge: any) => {
+		try {
+			// Find the ID of this message on Discord
+			const [dcMessageId] = ctx.TediCross.messageMap.getCorresponding(
+				MessageMap.TELEGRAM_TO_DISCORD,
+				bridge,
+				ctx.tediCross.message.message_id
+			);
+
+			// Get the channel to pin
+			const channel = await fetchDiscordChannel(ctx.TediCross.dcBot, bridge);
+
+			// Pin it on Discord
+			const dp = channel.pin(dcMessageId);
+
+			await Promise.all([dp]);
+		} catch (err: any) {
+			console.error(
+				`Could not cross-pin message from Telegram to Discord on bridge ${bridge.name}: ${err.message}`
+			);
+		}
+	};
+
+	const unpin = async (ctx: TediCrossContext, bridge: any) => {
+		try {
+			// Find the ID of this message on Discord
+			const [dcMessageId] = ctx.TediCross.messageMap.getCorresponding(
+				MessageMap.TELEGRAM_TO_DISCORD,
+				bridge,
+				ctx.tediCross.message.message_id
+			);
+
+			// Get the channel to pin
+			const channel = await fetchDiscordChannel(ctx.TediCross.dcBot, bridge);
+
+			// Pin it on Discord
+			const dp = channel.unpin(dcMessageId);
+
+			await Promise.all([dp]);
+		} catch (err: any) {
+			console.error(
+				`Could not cross-unpin message from Telegram to Discord on bridge ${bridge.name}: ${err.message}`
+			);
+		}
+	};
+
+	// Check whether this is a pinned or unpinned message
+	if (
+		bridge.telegram.crossPinOnDiscord &&
+		ctx.tediCross.message.pinned_message
+	) {
+		await pin(ctx, bridge);
+	} else {
+		await unpin(ctx, bridge);
+	}
+});
+
+/**
  * Relays a message from Telegram to Discord
  *
  * @param ctx The Telegraf context
