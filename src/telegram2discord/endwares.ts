@@ -146,10 +146,8 @@ export const leftChatMember = createMessageHandler((ctx: TediCrossContext, bridg
 			const [dcMessageId] = ctx.TediCross.messageMap.getCorresponding(
 				MessageMap.TELEGRAM_TO_DISCORD,
 				bridge,
-				ctx.tediCross.message.pinned_message
+				ctx.tediCross.message.pinned_message.message_id
 			);
-
-			console.log(ctx.tediCross.message);
 
 			// Wait for the Discord bot to become ready
 			await ctx.TediCross.dcBot.ready;
@@ -175,7 +173,7 @@ export const leftChatMember = createMessageHandler((ctx: TediCrossContext, bridg
 			const [dcMessageId] = ctx.TediCross.messageMap.getCorresponding(
 				MessageMap.TELEGRAM_TO_DISCORD,
 				bridge,
-				ctx.tediCross.message.pinned_message
+				ctx.tediCross.message.pinned_message.message_id
 			);
 
 			// Wait for the Discord bot to become ready
