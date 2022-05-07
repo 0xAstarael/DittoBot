@@ -32,7 +32,7 @@ export class MessageMap {
 		let [discordMessageId,telegramMessageId] = direction === 'd2t' ? [fromId, toId] : [toId, fromId];
 
 		// Generate the key and get the corresponding Messages
-		const d2tKey = `dt2 ${discordMessageId}`;
+		const d2tKey = `d2t ${discordMessageId}`;
 		const t2dKey = `t2d ${telegramMessageId}`;
 
 		let dittoMessageForKey = keyToDittoMessageMap.get(d2tKey);
