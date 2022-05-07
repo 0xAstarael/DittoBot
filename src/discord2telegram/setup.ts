@@ -251,6 +251,7 @@ export function setup(
 
 	// Listen for message edits
 	dcBot.on("messageUpdate", async (_oldMessage, newMessage) => {
+		console.log("message Update");
 		// Don't do anything with the bot's own messages
 		if (newMessage.author?.id === dcBot.user?.id) {
 			return;
@@ -266,6 +267,12 @@ export function setup(
 					newMessage.id
 				);
 				const tgMessageId = dittoMessage.telegramMessageId;
+
+				// Check if this is a pin update
+				if (!dittoMessage.pinned && newMessage.pinned) {
+					tgBot.telegram.pinChatMessage(bridge.telegram.chatId, tgMessageId);
+					dittoMessage.pinned = true;
+				}
 
 				// Get info about the sender
 				const senderName =
@@ -290,7 +297,8 @@ export function setup(
 		});
 	});
 
-	dcBot.on("channelPinsUpdate", async(channel, time) => {
+	// Since pinned messages are considered messageUpdates, we only need to check channelPinsUpdate for unpinning.
+/*	dcBot.on("channelPinsUpdate", async(channel, time) => {
 		console.log("pin stuff");
 		// Check if pinned message comes from the correct chat
 		const bridges = bridgeMap.fromDiscordChannelId(Number(channel.id));
@@ -331,7 +339,7 @@ export function setup(
 			});
 		}
 	});
-
+*/
 	// Listen for deleted messages
 	function onMessageDelete(message: Message): void {
 		// Check if it is a relayed message

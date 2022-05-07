@@ -149,6 +149,11 @@ export const leftChatMember = createMessageHandler((ctx: TediCrossContext, bridg
 				bridge,
 				ctx.tediCross.message.pinned_message.message_id
 			);
+
+			if (!dittoMessage || dittoMessage.pinned) {
+				return;
+			}
+
 			const dcMessageId = dittoMessage.discordMessageId;
 
 			// Wait for the Discord bot to become ready
@@ -162,6 +167,8 @@ export const leftChatMember = createMessageHandler((ctx: TediCrossContext, bridg
 			const dp = messageManager.pin(message);
 
 			await Promise.all([dp]);
+
+			dittoMessage.pinned = true;
 		} catch (err: any) {
 			console.error(
 				`Could not cross-pin message from Telegram to Discord on bridge ${bridge.name}: ${err.message}`
