@@ -230,7 +230,8 @@ export const relayMessage = (ctx: TediCrossContext) =>
 			// Discord doesn't handle messages longer than 2000 characters. Split it up into chunks that big
 			const messageText = prepared.header + "\n" + prepared.text;
 			let chunks = R.splitEvery(2000, messageText);
-			let headChunk = R.head(chunks).slice(0,-15).concat('...truncated...');
+			let headChunk = R.head(chunks) || "";
+			let displayChunk = headChunk.length > 1985 ? headChunk.slice(0,-15).concat('...truncated...') : headChunk;
 
 			// Wait for the Discord bot to become ready
 			await ctx.TediCross.dcBot.ready;
@@ -243,7 +244,7 @@ export const relayMessage = (ctx: TediCrossContext) =>
 			if (!R.isNil(prepared.file)) {
 				try {
 					dcMessage = await channel.send({
-						content: headChunk,
+						content: displayChunk,
 						files: [prepared.file]
 					});
 					chunks = R.tail(chunks);
@@ -258,7 +259,7 @@ export const relayMessage = (ctx: TediCrossContext) =>
 				}
 			}
 			else {
-				dcMessage = await channel.send(headChunk);
+				dcMessage = await channel.send(displayChunk);
 			}
 			// Send the rest in serial
 			/*dcMessage = await R.reduce(
