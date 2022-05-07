@@ -174,11 +174,11 @@ export const leftChatMember = createMessageHandler((ctx: TediCrossContext, bridg
 			);
 
 			// Get the channel to unpin
-			const channel = await fetchDiscordChannel(ctx.TediCross.dcBot, bridge);
-			const messageManager = channel.messages
+			const messageManager = (await fetchDiscordChannel(ctx.TediCross.dcBot, bridge)).messages;
+			const message = await messageManager.fetch(dcMessageId);
 
 			// Pin it on Discord
-			const dp = messageManager.unpin(messageManager.fetch(dcMessageId));
+			const dp = messageManager.unpin(message);
 
 			await Promise.all([dp]);
 		} catch (err: any) {
