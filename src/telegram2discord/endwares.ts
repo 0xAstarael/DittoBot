@@ -296,7 +296,7 @@ export const handleEdits = createMessageHandler(async (ctx: TediCrossContext, br
 			const dittoMessage = ctx.TediCross.messageMap.getCorresponding(
 				MessageMap.TELEGRAM_TO_DISCORD,
 				bridge,
-				ctx.tediCross.message.pinned_message.message_id
+				ctx.tediCross.message.message_id
 			);
 			const dcMessageId = dittoMessage.discordMessageId;
 
@@ -327,10 +327,9 @@ export const handleEdits = createMessageHandler(async (ctx: TediCrossContext, br
 			const dittoMessage = ctx.TediCross.messageMap.getCorresponding(
 				MessageMap.TELEGRAM_TO_DISCORD,
 				bridge,
-				ctx.tediCross.message.pinned_message.message_id
+				ctx.tediCross.message.message_id
 			);
 			const dcMessageId = dittoMessage.discordMessageId;
-
 
 			// Wait for the Discord bot to become ready
 			await ctx.TediCross.dcBot.ready;
