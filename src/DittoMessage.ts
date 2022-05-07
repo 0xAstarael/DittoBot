@@ -35,15 +35,15 @@ export class DittoMessage {
         console.log(this);
 	}
 
-    get DiscordMessageId(): string {
+    get discordMessageId(): string {
         return this._discordMessageId;
     }
 
-    get TelegramMessageId(): string {
+    get telegramMessageId(): string {
         return this._telegramMessageId;
     }
 
-    set Message(newMessage: string) {
+    set message(newMessage: string) {
         this._message = newMessage;
     }
 }
