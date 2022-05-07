@@ -146,7 +146,7 @@ export const leftChatMember = createMessageHandler((ctx: TediCrossContext, bridg
 			const [dcMessageId] = ctx.TediCross.messageMap.getCorresponding(
 				MessageMap.TELEGRAM_TO_DISCORD,
 				bridge,
-				ctx.tediCross.message.message_id
+				ctx.tediCross.message.pinned_message
 			);
 
 			console.log(dcMessageId);
@@ -172,7 +172,7 @@ export const leftChatMember = createMessageHandler((ctx: TediCrossContext, bridg
 			const [dcMessageId] = ctx.TediCross.messageMap.getCorresponding(
 				MessageMap.TELEGRAM_TO_DISCORD,
 				bridge,
-				ctx.tediCross.message.message_id
+				ctx.tediCross.message.pinned_message
 			);
 
 			// Get the messageManager and message to unpin
