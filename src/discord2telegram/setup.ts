@@ -284,7 +284,6 @@ export function setup(
 	});
 
 	dcBot.on("channelPinsUpdate", async(channel, time) => {
-		console.log("here");
 		// Check if pinned message comes from the correct chat
 		const bridges = bridgeMap.fromDiscordChannelId(Number(channel.id));
 		if (!R.isEmpty(bridges)) {
@@ -299,12 +298,13 @@ export function setup(
 					pinnedMessages
 //						.filter(message => message.editedTimestamp! >= time.getTime())
 						.forEach(async message => {
+							console.log(message);
 							// Check if it is a relayed message
-							// const isFromTelegram = message.author.id === dcBot.user?.id;
+							const isFromTelegram = message.author.id === dcBot.user?.id;
 							const tgMessageIds = (
-							//	isFromTelegram
-							//	? messageMap.getCorrespondingReverse(MessageMap.DISCORD_TO_TELEGRAM, bridge, message.id)
-								messageMap.getCorresponding(MessageMap.DISCORD_TO_TELEGRAM, bridge, message.id)
+								isFromTelegram
+								? messageMap.getCorrespondingReverse(MessageMap.DISCORD_TO_TELEGRAM, bridge, message.id)
+								: messageMap.getCorresponding(MessageMap.DISCORD_TO_TELEGRAM, bridge, message.id)
 							) as number[];
 
 							await Promise.all(
