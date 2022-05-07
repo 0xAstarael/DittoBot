@@ -44,6 +44,8 @@ export class MessageMap {
 			keyToDittoMessageMap.set(t2dKey, dittoMessageForKey);
 		}
 
+		console.log(keyToDittoMessageMap);
+
 		// Start a timeout removing it again after 24 hours
 		setTimeout(() => {
 			keyToDittoMessageMap.delete(d2tKey);
@@ -69,10 +71,10 @@ export class MessageMap {
 			const key = `${direction} ${fromId}`;
 
 			// Extract the IDs
-			const DittoMessage = keyToDittoMessageMap.get(key);
+			const dittoMessage = keyToDittoMessageMap.get(key);
 
 			// Return the ID
-			return DittoMessage;
+			return dittoMessage;
 		} catch (err) {
 			// Unknown message ID. Don't do anything
 			return [];
