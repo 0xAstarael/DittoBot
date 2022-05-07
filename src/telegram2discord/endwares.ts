@@ -323,6 +323,7 @@ export const handleEdits = createMessageHandler(async (ctx: TediCrossContext, br
 	const edit = async (ctx: TediCrossContext, bridge: any) => {
 		try {
 			const tgMessage = ctx.tediCross.message;
+			console.log(tgMessage);
 
 			// Find the ID of this message on Discord
 			const dittoMessage = ctx.TediCross.messageMap.getCorresponding(
