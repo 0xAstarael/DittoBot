@@ -310,6 +310,7 @@ export function setup(
 								bridge,
 								message.id
 							);
+							console.log(dittoMessage);
 							const tgMessageId = dittoMessage.telegramMessageId;
 
 							tgBot.telegram.pinChatMessage(bridge.telegram.chatId, tgMessageId)
