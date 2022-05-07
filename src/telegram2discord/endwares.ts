@@ -149,11 +149,11 @@ export const leftChatMember = createMessageHandler((ctx: TediCrossContext, bridg
 				ctx.tediCross.message.message_id
 			);
 
-			// Get the channel to pin
-			const channel = await fetchDiscordChannel(ctx.TediCross.dcBot, bridge);
+			// Get the channel's MessageManager to pin
+			const messageManager = await fetchDiscordChannel(ctx.TediCross.dcBot, bridge).messages;
 
 			// Pin it on Discord
-			const dp = channel.messages.pin(dcMessageId);
+			const dp = messageManager.pin(messageManager.fetch(dcMessageId));
 
 			await Promise.all([dp]);
 		} catch (err: any) {
@@ -172,11 +172,11 @@ export const leftChatMember = createMessageHandler((ctx: TediCrossContext, bridg
 				ctx.tediCross.message.message_id
 			);
 
-			// Get the channel to pin
-			const channel = await fetchDiscordChannel(ctx.TediCross.dcBot, bridge);
+			// Get the channel's MessageManager to pin
+			const messageManager = await fetchDiscordChannel(ctx.TediCross.dcBot, bridge).messages;
 
 			// Pin it on Discord
-			const dp = channel.messages.unpin(dcMessageId);
+			const dp = messageManager.unpin(messageManager.fetch(dcMessageId));
 
 			await Promise.all([dp]);
 		} catch (err: any) {
