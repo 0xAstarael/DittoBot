@@ -1,7 +1,7 @@
 import R from "ramda";
 import { MessageMap } from "../MessageMap";
 import { sleepOneMinute } from "../sleep";
-import { fetchDiscordChannel } from "../fetchDiscordChannel";
+import { fetchDiscordChannel, fetchDiscordMessageManager } from "../fetchDiscordChannel";
 import { Context } from "telegraf";
 import { deleteMessage, ignoreAlreadyDeletedError } from "./helpers";
 import { createFromObjFromUser } from "./From";
@@ -149,11 +149,11 @@ export const leftChatMember = createMessageHandler((ctx: TediCrossContext, bridg
 				ctx.tediCross.message.message_id
 			);
 
-			// Get the channel to pin
-			const channel = await fetchDiscordChannel(ctx.TediCross.dcBot, bridge);
+			// Get the channel's MessageManager to pin
+			const messageManager = await fetchDiscordMessageManager(ctx.TediCross.dcBot, bridge);
 
 			// Pin it on Discord
-			const dp = channel.messages.pin(channel.messages.fetch(dcMessageId));
+			const dp = messageManager.pin(messageManager.fetch(dcMessageId));
 
 			await Promise.all([dp]);
 		} catch (err: any) {
@@ -173,10 +173,10 @@ export const leftChatMember = createMessageHandler((ctx: TediCrossContext, bridg
 			);
 
 			// Get the channel's MessageManager to pin
-			const channel = await fetchDiscordChannel(ctx.TediCross.dcBot, bridge);
+			const messageManager = await fetchDiscordMessageManager(ctx.TediCross.dcBot, bridge);
 
 			// Pin it on Discord
-			const dp = channel.messages.unpin(channel.messages.fetch(dcMessageId));
+			const dp = messageManager.unpin(messageManager.fetch(dcMessageId));
 
 			await Promise.all([dp]);
 		} catch (err: any) {
