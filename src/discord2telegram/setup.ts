@@ -259,14 +259,14 @@ export function setup(
 		bridgeMap.fromDiscordChannelId(Number(newMessage.channel.id)).forEach(async bridge => {
 			try {
 				// Get the corresponding Telegram message ID
-				const DittoMessage = messageMap.getCorresponding(
+				const dittoMessage = messageMap.getCorresponding(
 					MessageMap.DISCORD_TO_TELEGRAM,
 					bridge,
 					newMessage.id
 				);
-				const tgMessageId = DittoMessage._telegramMessageId;
+				const tgMessageId = dittoMessage.telegramMessageId;
 
-				const DittoMessage_2 = messageMap.getCorresponding(
+				const dittoMessage_2 = messageMap.getCorresponding(
 					MessageMap.TELEGRAM_TO_DISCORD,
 					bridge,
 					tgMessageId
@@ -288,10 +288,10 @@ export function setup(
 					parse_mode: "HTML"
 				});
 
-				DittoMessage.message = textToSend;
+				dittoMessage.message = textToSend;
 
-				console.log(DittoMessage);
-				console.log(DittoMessage_2);
+				console.log(dittoMessage);
+				console.log(dittoMessage_2);
 			} catch (err) {
 				logger.error(`[${bridge.name}] Could not edit Telegram message:`, err);
 			}
@@ -315,12 +315,12 @@ export function setup(
 						.forEach(async message => {
 							console.log(message);
 							// Get the corresponding Telegram message ID
-							const DittoMessage = messageMap.getCorresponding(
+							const dittoMessage = messageMap.getCorresponding(
 								MessageMap.DISCORD_TO_TELEGRAM,
 								bridge,
 								message.id
 							);
-							const tgMessageId = DittoMessage._telegramMessageId;
+							const tgMessageId = dittoMessage.telegramMessageId;
 
 							tgBot.telegram.pinChatMessage(bridge.telegram.chatId, tgMessageId)
 						});
@@ -345,12 +345,12 @@ export function setup(
 
 			try {
 				// Get the corresponding Telegram message ID
-				const DittoMessage = messageMap.getCorresponding(
+				const dittoMessage = messageMap.getCorresponding(
 					MessageMap.DISCORD_TO_TELEGRAM,
 					bridge,
 					message.id
 				);
-				const tgMessageId = DittoMessage._telegramMessageId;
+				const tgMessageId = dittoMessage.telegramMessageId;
 
 				await tgBot.telegram.deleteMessage(bridge.telegram.chatId, tgMessageId);
 			} catch (err) {

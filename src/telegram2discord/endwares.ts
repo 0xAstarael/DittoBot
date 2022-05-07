@@ -144,12 +144,12 @@ export const leftChatMember = createMessageHandler((ctx: TediCrossContext, bridg
 	const pin = async (ctx: TediCrossContext, bridge: any) => {
 		try {
 			// Find the ID of this message on Discord
-			const DittoMessage = ctx.TediCross.messageMap.getCorresponding(
+			const dittoMessage = ctx.TediCross.messageMap.getCorresponding(
 				MessageMap.TELEGRAM_TO_DISCORD,
 				bridge,
 				ctx.tediCross.message.pinned_message.message_id
 			);
-			const dcMessageId = DittoMessage._discordMessageId;
+			const dcMessageId = dittoMessage.discordMessageId;
 
 			// Wait for the Discord bot to become ready
 			await ctx.TediCross.dcBot.ready;
@@ -172,12 +172,12 @@ export const leftChatMember = createMessageHandler((ctx: TediCrossContext, bridg
 	const unpin = async (ctx: TediCrossContext, bridge: any) => {
 		try {
 			// Find the ID of this message on Discord
-			const DittoMessage = ctx.TediCross.messageMap.getCorresponding(
+			const dittoMessage = ctx.TediCross.messageMap.getCorresponding(
 				MessageMap.TELEGRAM_TO_DISCORD,
 				bridge,
 				ctx.tediCross.message.pinned_message.message_id
 			);
-			const dcMessageId = DittoMessage._discordMessageId;
+			const dcMessageId = dittoMessage.discordMessageId;
 
 			// Wait for the Discord bot to become ready
 			await ctx.TediCross.dcBot.ready;
@@ -276,12 +276,12 @@ export const handleEdits = createMessageHandler(async (ctx: TediCrossContext, br
 	const del = async (ctx: TediCrossContext, bridge: any) => {
 		try {
 			// Find the ID of this message on Discord
-			const DittoMessage = ctx.TediCross.messageMap.getCorresponding(
+			const dittoMessage = ctx.TediCross.messageMap.getCorresponding(
 				MessageMap.TELEGRAM_TO_DISCORD,
 				bridge,
 				ctx.tediCross.message.pinned_message.message_id
 			);
-			const dcMessageId = DittoMessage._discordMessageId;
+			const dcMessageId = dittoMessage.discordMessageId;
 
 
 			// Get the channel to delete on
@@ -307,12 +307,12 @@ export const handleEdits = createMessageHandler(async (ctx: TediCrossContext, br
 			const tgMessage = ctx.tediCross.message;
 
 			// Find the ID of this message on Discord
-			const DittoMessage = ctx.TediCross.messageMap.getCorresponding(
+			const dittoMessage = ctx.TediCross.messageMap.getCorresponding(
 				MessageMap.TELEGRAM_TO_DISCORD,
 				bridge,
 				ctx.tediCross.message.pinned_message.message_id
 			);
-			const dcMessageId = DittoMessage._discordMessageId;
+			const dcMessageId = dittoMessage.discordMessageId;
 
 
 			// Wait for the Discord bot to become ready
