@@ -300,11 +300,11 @@ export function setup(
 //						.filter(message => message.editedTimestamp! >= time.getTime())
 						.forEach(async message => {
 							// Check if it is a relayed message
-							const isFromTelegram = message.author.id === dcBot.user?.id;
+							// const isFromTelegram = message.author.id === dcBot.user?.id;
 							const tgMessageIds = (
-								isFromTelegram
-								? messageMap.getCorrespondingReverse(MessageMap.DISCORD_TO_TELEGRAM, bridge, message.id)
-								: messageMap.getCorresponding(MessageMap.DISCORD_TO_TELEGRAM, bridge, message.id)
+							//	isFromTelegram
+							//	? messageMap.getCorrespondingReverse(MessageMap.DISCORD_TO_TELEGRAM, bridge, message.id)
+								messageMap.getCorresponding(MessageMap.DISCORD_TO_TELEGRAM, bridge, message.id)
 							) as number[];
 
 							await Promise.all(
