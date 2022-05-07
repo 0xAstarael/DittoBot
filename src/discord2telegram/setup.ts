@@ -264,16 +264,7 @@ export function setup(
 					bridge,
 					newMessage.id
 				);
-
-				console.log(dittoMessage);
-
 				const tgMessageId = dittoMessage.telegramMessageId;
-
-				const dittoMessage_2 = messageMap.getCorresponding(
-					MessageMap.TELEGRAM_TO_DISCORD,
-					bridge,
-					tgMessageId
-				);
 
 				// Get info about the sender
 				const senderName =
@@ -292,9 +283,6 @@ export function setup(
 				});
 
 				dittoMessage.message = textToSend;
-
-				console.log(dittoMessage);
-				console.log(dittoMessage_2);
 			} catch (err) {
 				logger.error(`[${bridge.name}] Could not edit Telegram message:`, err);
 			}
@@ -316,7 +304,6 @@ export function setup(
 					pinnedMessages
 						//.filter(message => message.editedTimestamp! >= time.getTime())
 						.forEach(async message => {
-							console.log(message);
 							// Get the corresponding Telegram message ID
 							const dittoMessage = messageMap.getCorresponding(
 								MessageMap.DISCORD_TO_TELEGRAM,

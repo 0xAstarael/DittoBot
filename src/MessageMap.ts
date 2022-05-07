@@ -44,8 +44,6 @@ export class MessageMap {
 			keyToDittoMessageMap.set(t2dKey, dittoMessageForKey);
 		}
 
-		console.log(keyToDittoMessageMap);
-
 		// Start a timeout removing it again after 24 hours
 		setTimeout(() => {
 			keyToDittoMessageMap.delete(d2tKey);
