@@ -37,12 +37,13 @@ export class MessageMap {
 
 		let dittoMessageForKey = keyToDittoMessageMap.get(d2tKey);
 		if (dittoMessageForKey === undefined) {
-			dittoMessageForKey = new DittoMessage(direction,fromId,toId,message);
+			dittoMessageForKey = new DittoMessage(direction,discordMessageId,telegramMessageId,message);
 			keyToDittoMessageMap.set(d2tKey, dittoMessageForKey);
 
 			// Create the opposite direction mapping
 			keyToDittoMessageMap.set(t2dKey, dittoMessageForKey);
 		}
+		console.log(keyToDittoMessageMap);
 
 		// Start a timeout removing it again after 24 hours
 		setTimeout(() => {
