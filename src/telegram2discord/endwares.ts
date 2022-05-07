@@ -1,7 +1,7 @@
 import R from "ramda";
 import { MessageMap } from "../MessageMap";
 import { sleepOneMinute } from "../sleep";
-import { fetchDiscordChannel, fetchDiscordMessageManager } from "../fetchDiscordChannel";
+import { fetchDiscordChannel } from "../fetchDiscordChannel";
 import { Context } from "telegraf";
 import { deleteMessage, ignoreAlreadyDeletedError } from "./helpers";
 import { createFromObjFromUser } from "./From";
@@ -149,8 +149,9 @@ export const leftChatMember = createMessageHandler((ctx: TediCrossContext, bridg
 				ctx.tediCross.message.message_id
 			);
 
-			// Get the channel's MessageManager to pin
-			const messageManager = await fetchDiscordMessageManager(ctx.TediCross.dcBot, bridge);
+			// Get the channel to pin
+			const channel = await fetchDiscordChannel(ctx.TediCross.dcBot, bridge);
+			const messageManager = channel.messages
 
 			// Pin it on Discord
 			const dp = messageManager.pin(messageManager.fetch(dcMessageId));
@@ -172,8 +173,9 @@ export const leftChatMember = createMessageHandler((ctx: TediCrossContext, bridg
 				ctx.tediCross.message.message_id
 			);
 
-			// Get the channel's MessageManager to pin
-			const messageManager = await fetchDiscordMessageManager(ctx.TediCross.dcBot, bridge);
+			// Get the channel to unpin
+			const channel = await fetchDiscordChannel(ctx.TediCross.dcBot, bridge);
+			const messageManager = channel.messages
 
 			// Pin it on Discord
 			const dp = messageManager.unpin(messageManager.fetch(dcMessageId));
