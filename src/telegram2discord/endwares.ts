@@ -163,7 +163,7 @@ export const leftChatMember = createMessageHandler((ctx: TediCrossContext, bridg
 			const messageManager = (await fetchDiscordChannel(ctx.TediCross.dcBot, bridge)).messages;
 			const message = await messageManager.fetch(dcMessageId);
 			console.log(dittoMessage);
-			console.log(message);
+			//console.log(message);
 
 			// Pin it on Discord
 			const dp = messageManager.pin(message);
@@ -257,18 +257,19 @@ export const relayMessage = (ctx: TediCrossContext) =>
 				}
 			}
 			// Send the rest in serial
-			dcMessage = await R.reduce(
+/*			dcMessage = await R.reduce(
 				(p, chunk) => p.then(() => channel.send(chunk)),
 				Promise.resolve(dcMessage),
 				chunks
 			);
-
+*/
 			// Make the mapping so future edits can work XXX Only the last chunk is considered
 			ctx.TediCross.messageMap.insert(
 				MessageMap.TELEGRAM_TO_DISCORD,
 				prepared.bridge,
 				ctx.tediCross.messageId,
-				dcMessage?.id
+				dcMessage?.id,
+				messageText
 			);
 		} catch (err: any) {
 			console.error(`Could not relay a message to Discord on bridge ${prepared.bridge.name}: ${err.message}`);

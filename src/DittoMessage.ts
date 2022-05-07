@@ -31,6 +31,8 @@ export class DittoMessage {
         this._telegramMessageId = telegramMessageId;
 
         this._message = message;
+
+        console.log(this);
 	}
 
 
