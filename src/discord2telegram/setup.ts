@@ -286,7 +286,7 @@ export function setup(
 			}
 		});
 	});
-/*
+
 	dcBot.on("channelPinsUpdate", async(channel, time) => {
 		// Check if pinned message comes from the correct chat
 		const bridges = bridgeMap.fromDiscordChannelId(Number(channel.id));
@@ -300,20 +300,18 @@ export function setup(
 					const pinnedMessages = await channel.messages.fetchPinned();
 
 					pinnedMessages
-//						.filter(message => message.editedTimestamp! >= time.getTime())
+						//.filter(message => message.editedTimestamp! >= time.getTime())
 						.forEach(async message => {
 							console.log(message);
-							// Check if it is a relayed message
-							const isFromTelegram = message.author.id === dcBot.user?.id;
-							const tgMessageIds = (
-								isFromTelegram
-								? messageMap.getCorrespondingReverse(MessageMap.DISCORD_TO_TELEGRAM, bridge, message.id)
-								: messageMap.getCorresponding(MessageMap.DISCORD_TO_TELEGRAM, bridge, message.id)
-							) as number[];
-
-							await Promise.all(
-								tgMessageIds.map(tgMessageId => tgBot.telegram.pinChatMessage(bridge.telegram.chatId, tgMessageId))
+							// Get the corresponding Telegram message ID
+							const DittoMessage = messageMap.getCorresponding(
+								MessageMap.DISCORD_TO_TELEGRAM,
+								bridge,
+								message.id
 							);
+							const tgMessageId = DittoMessage._telegramMessageId;
+
+							tgBot.telegram.pinChatMessage(bridge.telegram.chatId, tgMessageId)
 						});
 				} catch (err) {
 					logger.error(`[${bridge.name}] Could not pin Telegram message:`, err);
@@ -321,7 +319,7 @@ export function setup(
 			});
 		}
 	});
-*/
+
 	// Listen for deleted messages
 	function onMessageDelete(message: Message): void {
 		// Check if it is a relayed message
