@@ -27,4 +27,5 @@ bridges:
       relayLeaveMessages: true
       sendUsernames: true
       crossDeleteOnTelegram: true
+      crossPinOnTelegram: true
 debug: false

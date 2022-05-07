@@ -78,6 +78,7 @@ As mentioned in the step by step installation guide, there is a settings file. H
 	* `discord.relayLeaveMessages`: Whether or not to relay messages to Telegram about people leaving the Discord chat
 	* `discord.sendUsernames`: Whether or not to send the sender's name with the messages to Telegram
 	* `discord.crossDeleteOnTelegram`: Whether or not to also delete the corresponding message on Telegram when one is deleted in Discord
+	* `discord.crossPinOnTelegram`: Whether or not to also pin the corresponding message on Telegram when one is pinned in Discord
 
 The available settings will occasionally change. The bot takes care of this automatically
 

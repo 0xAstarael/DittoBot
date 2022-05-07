@@ -283,6 +283,40 @@ export function setup(
 		});
 	});
 
+	dcBot.on("channelPinsUpdate", async(channel, time) => {
+		// Check if pinned message comes from the correct chat
+		const bridges = bridgeMap.fromDiscordChannelId(Number(channel.id));
+		if (!R.isEmpty(bridges)) {
+			bridges.forEach(async bridge => {
+				try {
+					// Ignore it if cross pin is disabled
+					if (!bridge.discord.crossPinOnTelegram) {
+						return;
+					}
+					const pinnedMessages = await channel.messages.fetchPinned();
+
+					pinnedMessages
+						.filter((editedTimestamp: number) => editedTimestamp >= time)
+						.forEach(async message => {
+							// Check if it is a relayed message
+							const isFromTelegram = message.author.id === dcBot.user?.id;
+							const tgMessageIds = (
+								isFromTelegram
+								? messageMap.getCorrespondingReverse(MessageMap.DISCORD_TO_TELEGRAM, bridge, message.id)
+								: messageMap.getCorresponding(MessageMap.DISCORD_TO_TELEGRAM, bridge, message.id)
+							) as number[];
+
+							await Promise.all(
+								tgMessageIds.map(tgMessageId => tgBot.telegram.pinChatMessage(bridge.telegram.chatId, tgMessageId))
+							);
+						});
+				} catch (err) {
+					logger.error(`[${bridge.name}] Could not pin Telegram message:`, err);
+				}
+			});
+		}
+	});
+
 	// Listen for deleted messages
 	function onMessageDelete(message: Message): void {
 		// Check if it is a relayed message
