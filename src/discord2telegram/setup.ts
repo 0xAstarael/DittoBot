@@ -162,7 +162,7 @@ export function setup(
 						MessageMap.DISCORD_TO_TELEGRAM,
 						bridge,
 						message.reference!.messageId!
-					)?.referencedMessage : null;
+					) : null;
 				console.log(repliedDittoMessage);
 				const repliedTelegramMessageId = repliedDittoMessage ? parseInt(repliedDittoMessage.telegramMessageId) : 0;
 
