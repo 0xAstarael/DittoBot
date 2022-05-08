@@ -8,10 +8,12 @@ export class DittoMessage {
 	private _discordMessageId: string;
     private _telegramMessageId: string;
 
-    private _message: string | null;
+    private _messageText: string | null;
 
     private _pinned: boolean;
     private _reactions: Set<string>;
+
+    private _referencedMessage: DittoMessage | null;
 
     /**
 	 * Creates a new Message object
@@ -21,7 +23,7 @@ export class DittoMessage {
 	 * @param telegramMessageId	Message ID in Telegram
      * @param message displayed content of message
 	 */
-	constructor(direction: Direction, discordMessageId: string, telegramMessageId: string, message: string | null) {
+	constructor(direction: Direction, discordMessageId: string, telegramMessageId: string, messageText: string | null, referencedMessage: DittoMessage | null) {
 		/** The message itself */
 		this._reactions = new Set();
         this._pinned = false;
@@ -30,7 +32,8 @@ export class DittoMessage {
         this._discordMessageId = discordMessageId;
         this._telegramMessageId = telegramMessageId;
 
-        this._message = message;
+        this._messageText = messageText;
+        this._referencedMessage = referencedMessage;
 
         console.log(this);
 	}
@@ -52,7 +55,17 @@ export class DittoMessage {
         return this._telegramMessageId;
     }
 
+    get referencedMessage(): DittoMessage | null {
+        return this._referencedMessage;
+    }
+
     set message(newMessage: string) {
         this._message = newMessage;
+    }
+
+    get displayMessage(): string {
+        if (this._referencedMessage) {
+
+        }
     }
 }

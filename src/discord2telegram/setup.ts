@@ -155,6 +155,15 @@ export function setup(
 				// This is now the latest message for this bridge
 				latestDiscordMessageIds.setLatest(message.id, bridge);
 
+				// Check if this is a reply
+				const repliedDittoMessage = message.reply ?
+					messageMap.getCorresponding(
+						MessageMap.DISCORD_TO_TELEGRAM,
+						bridge,
+						message.reference.message_id
+					)?.referencedMessage : null;
+				const repliedTelegramMessageId = repliedDittoMessage ? parseInt(repliedDittoMessage.telegramMessageId) : 0;
+
 				// Check for attachments and pass them on
 				message.attachments.forEach(async ({ url }) => {
 					try {
@@ -162,7 +171,9 @@ export function setup(
 							? `<b>${senderName}</b>\n<a href="${url}">${url}</a>`
 							: `<a href="${url}">${url}</a>`;
 						const tgMessage = await tgBot.telegram.sendMessage(bridge.telegram.chatId, textToSend, {
-							parse_mode: "HTML"
+							parse_mode: "HTML",
+							reply_to_message_id: repliedTelegramMessageId,
+							allow_sending_without_reply: true
 						});
 						messageMap.insert(
 							MessageMap.DISCORD_TO_TELEGRAM,
@@ -190,7 +201,9 @@ export function setup(
 						// Send it
 						tgBot.telegram.sendMessage(bridge.telegram.chatId, text, {
 							parse_mode: "HTML",
-							disable_web_page_preview: true
+							disable_web_page_preview: true,
+							reply_to_message_id: repliedTelegramMessageId,
+							allow_sending_without_reply: true
 						});
 					} catch (err) {
 						logger.error(`[${bridge.name}] Telegram did not accept an embed:`, err);
@@ -208,7 +221,9 @@ export function setup(
 							? `<b>${senderName}</b>\n${processedMessage}`
 							: processedMessage;
 						const tgMessage = await tgBot.telegram.sendMessage(bridge.telegram.chatId, textToSend, {
-							parse_mode: "HTML"
+							parse_mode: "HTML",
+							reply_to_message_id: repliedTelegramMessageId,
+							allow_sending_without_reply: true
 						});
 
 						// Make the mapping so future edits can work
