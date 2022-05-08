@@ -246,9 +246,10 @@ export const relayMessage = (ctx: TediCrossContext) =>
 				MessageMap.TELEGRAM_TO_DISCORD,
 				prepared.bridge,
 				ctx.tediCross.repliedMessageId
-			) || null;
+			);
 			console.log(repliedDittoMessage);
-			const repliedDiscordMessage = await channel.messages.fetch(repliedDittoMessage.discordMessageId) || null;
+
+			const repliedDiscordMessage = repliedDittoMessage ? await channel.messages.fetch(repliedDittoMessage.discordMessageId) : null;
 
 			let dcMessage = null;
 			// Send the attachment first, if there is one
