@@ -61,7 +61,7 @@ export class MessageMap {
 	 *
 	 * @returns Message IDs of the corresponding message, i.e. the IDs of the messages the bot sent
 	 */
-	getCorresponding(direction: Direction, bridge: Bridge, fromId: string | null) {
+	getCorresponding(direction: Direction, bridge: Bridge, fromId: string) {
 		try {
 			// Get the key-to-IDs map
 			const keyToDittoMessageMap = this._map.get(bridge);
