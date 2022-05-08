@@ -6,7 +6,7 @@ import { fetchDiscordChannel } from "../fetchDiscordChannel";
 import { Context } from "telegraf";
 import { deleteMessage, ignoreAlreadyDeletedError } from "./helpers";
 import { createFromObjFromUser } from "./From";
-import { MessageEditOptions } from "discord.js";
+import { MessageEditOptions, MessageResolvable } from "discord.js";
 import { Message, User } from "telegraf/typings/core/types/typegram";
 
 export interface TediCrossContext extends Context {
@@ -249,7 +249,7 @@ export const relayMessage = (ctx: TediCrossContext) =>
 			);
 			console.log(repliedDittoMessage);
 
-			const repliedDiscordMessage = repliedDittoMessage ? await channel.messages.fetch(repliedDittoMessage.discordMessageId) : null;
+			const repliedDiscordMessage = repliedDittoMessage ? await channel.messages.fetch(repliedDittoMessage.discordMessageId) : "0";
 
 			let dcMessage = null;
 			// Send the attachment first, if there is one
