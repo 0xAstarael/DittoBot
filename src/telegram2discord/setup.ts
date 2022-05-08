@@ -111,7 +111,7 @@ export function setup(
 			tgBot.on("new_chat_members", newChatMembers);
 			tgBot.on("left_chat_member", leftChatMember);
 			tgBot.use(middlewares.addFromObj);
-			tgBot.use(middlewares.addReplyObj);
+			tgBot.use(middlewares.addRepliedMessageId);
 			tgBot.use(middlewares.addForwardFrom);
 			tgBot.use(middlewares.addTextObj);
 			tgBot.use(middlewares.addFileObj);

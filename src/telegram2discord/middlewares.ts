@@ -65,46 +65,6 @@ function createTextObjFromMessage(ctx: TediCrossContext, message: Message) {
 }
 
 /**
- * Makes the reply text to show on Discord
- *
- * @param replyTo The replyTo object from the tediCross context
- * @param replyLength How many characters to take from the original
- * @param maxReplyLines How many lines to cut the reply text after
- *
- * @returns The reply text to display
- */
-const makeReplyText = (replyTo: any, replyLength: number, maxReplyLines: number) => {
-	const countDoublePipes = R.tryCatch(str => str.match(/\|\|/g).length, R.always(0));
-
-	// Make the reply string
-	return R.compose<any, any>(
-		// Add ellipsis if the text was cut
-		R.ifElse(R.compose(R.equals(R.length(replyTo.text.raw)), R.length), R.identity, R.concat(R.__, "…")),
-		// Handle spoilers (pairs of "||" in Discord)
-		//@ts-ignore
-		R.ifElse<any, any, any>(
-			// If one of a pair of "||" has been removed
-			quote =>
-				R.and(
-					//@ts-ignore
-					countDoublePipes(quote, "||") % 2 === 1,
-					countDoublePipes(replyTo.text.raw) % 2 === 0
-				),
-			// Add one to the end
-			R.concat(R.__, "||"),
-			// Otherwise do nothing
-			R.identity
-		),
-		// Take only a number of lines
-		R.join("\n"),
-		R.slice(0, maxReplyLines),
-		R.split("\n"),
-		// Take only a portion of the text
-		R.slice(0, replyLength)
-	)(replyTo.text.raw);
-};
-
-/**
  * Makes a discord mention out of a username
  *
  * @param username The username to make the mention from
@@ -317,42 +277,12 @@ function addFromObj(ctx: TediCrossContext, next: () => void) {
  * @param ctx.tediCross.message The message object to create the `reply` object from
  * @param next Function to pass control to next middleware
  */
-function addReplyObj(ctx: TediCrossContext, next: () => void) {
+function addRepliedMessageId(ctx: TediCrossContext, next: () => void) {
 	const repliedToMessage = ctx.tediCross.message.reply_to_message;
 
 	if (!R.isNil(repliedToMessage)) {
 		// This is a reply
-		const isReplyToTediCross =
-			!R.isNil(repliedToMessage.from) && R.equals(repliedToMessage.from.id, ctx.TediCross.me.id);
-		ctx.tediCross.replyTo = {
-			isReplyToTediCross,
-			message: repliedToMessage,
-			originalFrom: createFromObjFromMessage(repliedToMessage),
-			text: createTextObjFromMessage(ctx, repliedToMessage)
-		};
-
-		// Handle replies to TediCross
-		if (isReplyToTediCross) {
-			// Get the username of the Discord user who sent this and remove it from the text
-			const split = R.split("\n", ctx.tediCross.replyTo.text.raw);
-			ctx.tediCross.replyTo.dcUsername = R.head(split);
-			ctx.tediCross.replyTo.text.raw = R.join("\n", R.tail(split));
-
-			// Cut off the first entity (the bold text on the username) and reduce the offset of the rest by the length of the username and the newline
-			ctx.tediCross.replyTo.text.entities = R.compose(
-				R.map((entity: any) =>
-					R.mergeRight(entity, {
-						offset: entity.offset - ctx.tediCross.replyTo.dcUsername.length - 1
-					})
-				),
-				R.tail
-			)(ctx.tediCross.replyTo.text.entities);
-		}
-
-		// Turn the original text into "<no text>" if there is no text
-		if (R.isEmpty(ctx.tediCross.replyTo.text.raw)) {
-			ctx.tediCross.replyTo.text.raw = "<no text>";
-		}
+		ctx.tediCross.repliedMessageId = repliedToMessage.message_id;
 	}
 
 	next();
@@ -557,20 +487,6 @@ async function addPreparedObj(ctx: TediCrossContext, next: () => void) {
 				return header;
 			})();
 
-			// Handle blockquote replies
-			const replyQuote = R.ifElse(
-				tc => !R.isNil(tc.replyTo),
-				//@ts-ignore
-				R.compose<any, any>(R.replace(/^/gm, "> "), tc =>
-					makeReplyText(
-						tc.replyTo,
-						ctx.TediCross.settings.discord.replyLength,
-						ctx.TediCross.settings.discord.maxReplyLines
-					)
-				),
-				R.always(undefined)
-			)(tc);
-
 			// Handle file
 			const file = R.ifElse(
 				R.compose(R.isNil, R.prop("file")),
@@ -581,10 +497,6 @@ async function addPreparedObj(ctx: TediCrossContext, next: () => void) {
 			// Make the text to send
 			const text = await (async () => {
 				let text = await handleEntities(tc.text.raw, tc.text.entities, ctx.TediCross.dcBot, bridge);
-
-				if (!R.isNil(replyQuote)) {
-					text = replyQuote + "\n" + text;
-				}
 
 				return text;
 			})();
@@ -617,7 +529,7 @@ export default {
 	removeBridgesIgnoringLeaveMessages,
 	informThisIsPrivateBot,
 	addFromObj,
-	addReplyObj,
+	addRepliedMessageId,
 	addForwardFrom,
 	addTextObj,
 	addFileObj,

@@ -22,7 +22,7 @@ export interface TediCrossContext extends Context {
 		messageId: string;
 		prepared: any;
 		bridges: any;
-		replyTo: any;
+		repliedMessageId: any;
 		text: any;
 		forwardFrom: any;
 		from: any;
@@ -229,6 +229,14 @@ export const leftChatMember = createMessageHandler((ctx: TediCrossContext, bridg
 export const relayMessage = (ctx: TediCrossContext) =>
 	R.forEach(async (prepared: any) => {
 		try {
+			// Check if message is a reply
+			const repliedDittoMessage = ctx.TediCross.messageMap.getCorresponding(
+				MessageMap.TELEGRAM_TO_DISCORD,
+				prepared.bridge,
+				ctx.tediCross.repliedMessageId
+			) || null;
+		console.log(repliedDittoMessage);
+		const repliedDiscordMessageId = repliedDittoMessage ? parseInt(repliedDittoMessage.discordMessageId) : 0;
 			// Discord doesn't handle messages longer than 2000 characters. Split it up into chunks that big
 			const messageText = prepared.header + "\n" + prepared.text;
 			let chunks = R.splitEvery(2000, messageText);
@@ -247,13 +255,22 @@ export const relayMessage = (ctx: TediCrossContext) =>
 				try {
 					dcMessage = await channel.send({
 						content: displayChunk,
-						files: [prepared.file]
+						files: [prepared.file],
+						reply: {
+							messageReference: repliedDiscordMessageId,
+							failIfNotExist: false
+						}
 					});
 					chunks = R.tail(chunks);
 				} catch (err: any) {
 					if (err.message === "Request entity too large") {
-						dcMessage = await channel.send(
-							`***${prepared.senderName}** on Telegram sent a file, but it was too large for Discord. If you want it, ask them to send it some other way*`
+						dcMessage = await channel.send({
+							content: `***${prepared.senderName}** on Telegram sent a file, but it was too large for Discord. If you want it, ask them to send it some other way*`,
+							reply: {
+								messageReference: repliedDiscordMessageId,
+								failIfNotExist: false
+							}
+						}
 						);
 					} else {
 						throw err;
@@ -261,7 +278,13 @@ export const relayMessage = (ctx: TediCrossContext) =>
 				}
 			}
 			else {
-				dcMessage = await channel.send(displayChunk);
+				dcMessage = await channel.send({
+					content: displayChunk,
+					reply: {
+						messageReference: repliedDiscordMessageId,
+						failIfNotExist: false
+					}
+				});
 			}
 
 			// Send the rest in serial
@@ -277,7 +300,8 @@ export const relayMessage = (ctx: TediCrossContext) =>
 				prepared.bridge,
 				ctx.tediCross.messageId,
 				dcMessage.id,
-				messageText
+				messageText,
+				repliedDittoMessage
 			);
 		} catch (err: any) {
 			console.error(`Could not relay a message to Discord on bridge ${prepared.bridge.name}: ${err.message}`);
