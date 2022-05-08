@@ -21,7 +21,7 @@ export class DittoMessage {
 	 * @param direction One of the two direction constants of this class
 	 * @param discordMessageId Message ID in Discord
 	 * @param telegramMessageId	Message ID in Telegram
-     * @param message displayed content of message
+     * @param messageText displayed content of message
 	 */
 	constructor(direction: Direction, discordMessageId: string, telegramMessageId: string, messageText: string | null, referencedMessage: DittoMessage | null) {
 		/** The message itself */
@@ -59,7 +59,7 @@ export class DittoMessage {
         return this._referencedMessage;
     }
 
-    set message(newMessage: string) {
-        this._message = newMessage;
+    set messageText(newMessage: string) {
+        this._messageText = newMessage;
     }
 }

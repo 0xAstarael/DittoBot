@@ -21,7 +21,7 @@ export class MessageMap {
 	 * @param fromId Message ID to map from, i.e. the ID of the message the bot received
 	 * @param toId	Message ID to map to, i.e. the ID of the message the bot sent
 	 */
-	insert(direction: Direction, bridge: Bridge, fromId: string, toId: string, message: string | null) {
+	insert(direction: Direction, bridge: Bridge, fromId: string, toId: string, messageText: string | null, referencedMessage: DittoMessage | null) {
 		// Get/create the entry for the bridge
 		let keyToDittoMessageMap = this._map.get(bridge);
 		if (keyToDittoMessageMap === undefined) {
@@ -37,7 +37,7 @@ export class MessageMap {
 
 		let dittoMessageForKey = keyToDittoMessageMap.get(d2tKey);
 		if (dittoMessageForKey === undefined) {
-			dittoMessageForKey = new DittoMessage(direction,discordMessageId,telegramMessageId,message);
+			dittoMessageForKey = new DittoMessage(direction,discordMessageId,telegramMessageId,messageText,referencedMessage);
 			keyToDittoMessageMap.set(d2tKey, dittoMessageForKey);
 
 			// Create the opposite direction mapping

@@ -156,11 +156,11 @@ export function setup(
 				latestDiscordMessageIds.setLatest(message.id, bridge);
 
 				// Check if this is a reply (type = 19)
-				const repliedDittoMessage = message.type == 19 ?
+				const repliedDittoMessage = parseInt(message.type) == 19 ?
 					messageMap.getCorresponding(
 						MessageMap.DISCORD_TO_TELEGRAM,
 						bridge,
-						message.reference.message_id
+						message.reference!.messageId
 					)?.referencedMessage : null;
 				const repliedTelegramMessageId = repliedDittoMessage ? parseInt(repliedDittoMessage.telegramMessageId) : 0;
 
@@ -180,7 +180,8 @@ export function setup(
 							bridge,
 							message.id,
 							tgMessage.message_id.toString(),
-							textToSend
+							textToSend,
+							repliedDittoMessage
 						);
 					} catch (err) {
 						logger.error(`[${bridge.name}] Telegram did not accept an attachment:`, err);
@@ -232,7 +233,8 @@ export function setup(
 							bridge,
 							message.id,
 							tgMessage.message_id.toString(),
-							textToSend
+							textToSend,
+							repliedDittoMessage
 						);
 					} catch (err) {
 						logger.error(`[${bridge.name}] Telegram did not accept a message:`, err);
@@ -310,7 +312,7 @@ export function setup(
 					parse_mode: "HTML"
 				});
 
-				dittoMessage.message = textToSend;
+				dittoMessage.messageText = textToSend;
 			} catch (err) {
 				logger.error(`[${bridge.name}] Could not edit Telegram message:`, err);
 			}

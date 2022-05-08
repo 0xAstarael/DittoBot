@@ -349,7 +349,7 @@ export const handleEdits = createMessageHandler(async (ctx: TediCrossContext, br
 				// Send them in serial, with the attachment first, if there is one
 				await dcMessage.edit({ content: messageText, attachment: prepared.attachment } as MessageEditOptions);
 
-				dittoMessage.message = messageText;
+				dittoMessage.messageText = messageText;
 			})(ctx.tediCross.prepared);
 		} catch (err: any) {
 			// Log it
