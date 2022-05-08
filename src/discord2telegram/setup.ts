@@ -156,7 +156,7 @@ export function setup(
 				latestDiscordMessageIds.setLatest(message.id, bridge);
 
 				// Check if this is a reply (type = 19)
-				console.log(message.reference);
+				console.log(message);
 				const repliedDittoMessage = parseInt(message.type) == 19 ?
 					messageMap.getCorresponding(
 						MessageMap.DISCORD_TO_TELEGRAM,
