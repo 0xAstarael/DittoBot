@@ -62,10 +62,4 @@ export class DittoMessage {
     set message(newMessage: string) {
         this._message = newMessage;
     }
-
-    get displayMessage(): string {
-        if (this._referencedMessage) {
-
-        }
-    }
 }
