@@ -160,7 +160,7 @@ export function setup(
 					messageMap.getCorresponding(
 						MessageMap.DISCORD_TO_TELEGRAM,
 						bridge,
-						message.reference.messageId || -1
+						message.reference!.messageId
 					)?.referencedMessage : null;
 				const repliedTelegramMessageId = repliedDittoMessage ? parseInt(repliedDittoMessage.telegramMessageId) : 0;
 
