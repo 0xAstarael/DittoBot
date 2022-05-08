@@ -259,7 +259,7 @@ export const relayMessage = (ctx: TediCrossContext) =>
 						files: [prepared.file],
 						reply: {
 							messageReference: repliedDiscordMessage,
-							failIfNotExist: false
+							failIfNotExists: false
 						}
 					});
 					chunks = R.tail(chunks);
@@ -269,7 +269,7 @@ export const relayMessage = (ctx: TediCrossContext) =>
 							content: `***${prepared.senderName}** on Telegram sent a file, but it was too large for Discord. If you want it, ask them to send it some other way*`,
 							reply: {
 								messageReference: repliedDiscordMessage,
-								failIfNotExist: false
+								failIfNotExists: false
 							}
 						}
 						);
@@ -283,7 +283,7 @@ export const relayMessage = (ctx: TediCrossContext) =>
 					content: displayChunk,
 					reply: {
 						messageReference: repliedDiscordMessage,
-						failIfNotExist: false
+						failIfNotExists: false
 					}
 				});
 			}

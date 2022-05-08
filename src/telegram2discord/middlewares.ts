@@ -441,32 +441,12 @@ async function addPreparedObj(ctx: TediCrossContext, next: () => void) {
 				const originalSender = R.isNil(tc.forwardFrom)
 					? null
 					: makeDisplayName(ctx.TediCross.settings.telegram.useFullNameInsteadOfUsername, tc.forwardFrom);
-				// Get the name of the replied-to user, if this is a reply
-				const repliedToName = R.isNil(tc.replyTo)
-					? null
-					: await R.ifElse(
-							R.prop("isReplyToTediCross") as any,
-							R.compose(
-								(username: string) => makeDiscordMention(username, ctx.TediCross.dcBot, bridge),
-								R.prop("dcUsername") as any
-							),
-							R.compose(
-								R.partial(makeDisplayName, [
-									ctx.TediCross.settings.telegram.useFullNameInsteadOfUsername
-								]),
-								//@ts-ignore
-								R.prop("originalFrom")
-							)
-					  )(tc.replyTo);
 				// Build the header
 				let header = "";
 				if (bridge.telegram.sendUsernames) {
 					if (!R.isNil(tc.forwardFrom)) {
 						// Forward
 						header = `**${originalSender}** (forwarded by **${senderName}**)`;
-					} else if (!R.isNil(tc.replyTo)) {
-						// Reply
-						header = `**${senderName}** (in reply to **${repliedToName}**)`;
 					} else {
 						// Ordinary message
 						header = `**${senderName}**`;
@@ -475,9 +455,6 @@ async function addPreparedObj(ctx: TediCrossContext, next: () => void) {
 					if (!R.isNil(tc.forwardFrom)) {
 						// Forward
 						header = `(forward from **${originalSender}**)`;
-					} else if (!R.isNil(tc.replyTo)) {
-						// Reply
-						header = `(in reply to **${repliedToName}**)`;
 					} else {
 						// Ordinary message
 						header = "";
