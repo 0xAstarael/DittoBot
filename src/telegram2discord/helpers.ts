@@ -50,7 +50,7 @@ export const updateMessages = R.curry(async (ctx) => {
 	R.forEach((bridge: any) => {
 		console.log(bridge);
 		R.forEach((dittoMessage: any) => {
-			if (dittoMessage.direction == messageMap.DIRECTION_DISCORD_TO_TELEGRAM) {
+			if (!dittoMessage || dittoMessage.direction == messageMap.DIRECTION_DISCORD_TO_TELEGRAM) {
 				return;
 			}
 			const telegramMessageId = dittoMessage.telegramMessageId;
