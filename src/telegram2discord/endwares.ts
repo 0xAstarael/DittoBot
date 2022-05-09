@@ -40,7 +40,6 @@ export interface TediCrossContext extends Context {
  * @param ctx	The Telegraf context
  */
 const createMessageHandler = R.curry((func, ctx) => {
-	console.log(ctx);
 	// Wait for the Discord bot to become ready
 	ctx.TediCross.dcBot.ready.then(() => R.forEach(bridge => func(ctx, bridge))(ctx.tediCross.bridges));
 });
@@ -389,33 +388,4 @@ export const handleEdits = createMessageHandler(async (ctx: TediCrossContext, br
 	} else {
 		await edit(ctx, bridge);
 	}
-});
-
-/**
- * Updates all existing Telegram messages
- *
- * @param ctx The Telegraf context to use
- *
- * @returns Promise resolving when the messages are deleted or unpinned
- */
-export const updateMessages = createMessageHandler(async (ctx: TediCrossContext, bridge: any) => {
-	const messageMap = ctx.TediCross.messageMap;
-	let promisedTasks: Promise<any>[] = new Array();
-	R.forEach((dittoMessage: any) => {
-		if (dittoMessage.direction == messageMap.DIRECTION_DISCORD_TO_TELEGRAM) {
-			return;
-		}
-		const telegramMessageId = dittoMessage.telegramMessageId;
-
-		// Check pinned messages to make sure they are still pinned, or else unpin
-		if (dittoMessage.pinned && !ctx.TediCross.me.telegram.Message(telegramMessageId).pinned_message) {}
-
-		// Check non-deleted messages to make sure they still exist, or else delete
-		if (!dittoMessage.deleted && !ctx.TediCross.me.telegram.MessageId(telegramMessageId)) {
-			console.log(dittoMessage);
-			promisedTasks.push(deleteMessage(bridge.telegram.chatId,telegramMessageId));
-		}
-	})(messageMap.getDittoMessageMapForBridge(bridge))
-
-	await Promise.all(promisedTasks);
 });
