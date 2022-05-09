@@ -45,10 +45,10 @@ export const deleteMessage = R.curry((ctx, { chat, message_id }) => ctx.telegram
  * @returns Promise resolving when the messages are deleted or unpinned
  */
 export const updateMessages = R.curry(async (ctx) => {
-	console.log(ctx);
 	const messageMap = ctx.TediCross.messageMap;
 	let promisedTasks: Promise<any>[] = new Array();
 	R.forEach((bridge: any) => {
+		console.log(bridge);
 		R.forEach((dittoMessage: any) => {
 			if (dittoMessage.direction == messageMap.DIRECTION_DISCORD_TO_TELEGRAM) {
 				return;
