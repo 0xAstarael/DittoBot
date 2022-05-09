@@ -64,7 +64,7 @@ export const updateMessages = R.curry(async (ctx) => {
 				promisedTasks.push(deleteMessage(bridge.telegram.chatId,telegramMessageId));
 			}
 		})(messageMap.getDittoMessageMapForBridge(bridge))
-	})(ctx.bridgeMap.bridges);
+	})(ctx.TediCross.bridgeMap.bridges);
 
 	await Promise.all(promisedTasks);
 });
