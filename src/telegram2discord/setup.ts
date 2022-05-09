@@ -9,8 +9,7 @@ import { MessageMap } from "../MessageMap";
 import { BridgeMap } from "../bridgestuff/BridgeMap";
 import { Settings } from "../settings/Settings";
 import * as telegraf from "telegraf";
-import { chatinfo, handleEdits, leftChatMember, newChatMembers, pinnedMessage, relayMessage, TediCrossContext } from "./endwares";
-import { updateMessages } from "./helpers";
+import { chatinfo, handleEdits, leftChatMember, newChatMembers, pinnedMessage, relayMessage, TediCrossContext, updateMessages } from "./endwares";
 
 /***********
  * Helpers *
