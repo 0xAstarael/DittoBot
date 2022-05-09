@@ -40,6 +40,7 @@ export interface TediCrossContext extends Context {
  * @param ctx	The Telegraf context
  */
 const createMessageHandler = R.curry((func, ctx) => {
+	console.log(ctx);
 	// Wait for the Discord bot to become ready
 	ctx.TediCross.dcBot.ready.then(() => R.forEach(bridge => func(ctx, bridge))(ctx.tediCross.bridges));
 });
