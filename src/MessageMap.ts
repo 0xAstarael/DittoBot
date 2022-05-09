@@ -99,7 +99,7 @@ export class MessageMap {
 
 	getDittoMessageMapForBridge(bridge: Bridge): DittoMessage[] {
 		if(this._map.size == 0) {
-			return []];
+			return [];
 		}
 		return this._map.get(bridge).values();
 	}
