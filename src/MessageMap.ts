@@ -98,6 +98,8 @@ export class MessageMap {
 */
 
 	getDittoMessageMapForBridge(bridge: Bridge): DittoMessage[] {
+		console.log(this._map);
+		console.log(this._map.size);
 		if(this._map.size == 0) {
 			return [];
 		}
