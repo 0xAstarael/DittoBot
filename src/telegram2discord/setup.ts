@@ -141,6 +141,6 @@ export function setup(
 		.then(() => tgBot.startPolling())
 		// Start update interval for telegram side. Telegram APIs are really bad about deletes and unpins, so will need to manually check messages for them.
 		.then(() => setInterval(() => {
-			updateMessages(tgBot)
+			updateMessages(tgBot.context)
 		}, moment.duration(5, "seconds").asMilliseconds()));
 }
