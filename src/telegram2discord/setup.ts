@@ -143,5 +143,5 @@ export function setup(
 		// Start update interval for telegram side. Telegram APIs are really bad about deletes and unpins, so will need to manually check messages for them.
 		.then(() => setInterval(() => {
 			updateMessages(tgBot.context)
-		}, moment.duration(60, "seconds").asMilliseconds()));
+		}, moment.duration(5, "seconds").asMilliseconds()));
 }
