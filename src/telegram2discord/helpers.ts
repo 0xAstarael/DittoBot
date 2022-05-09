@@ -48,7 +48,6 @@ export const updateMessages = R.curry(async (ctx) => {
 	const messageMap = ctx.TediCross.messageMap;
 	let promisedTasks: Promise<any>[] = new Array();
 	R.forEach((bridge: any) => {
-		console.log(bridge);
 		R.forEach((dittoMessage: any) => {
 			if (!dittoMessage || dittoMessage.direction == messageMap.DIRECTION_DISCORD_TO_TELEGRAM) {
 				return;
@@ -57,6 +56,8 @@ export const updateMessages = R.curry(async (ctx) => {
 
 			// Check pinned messages to make sure they are still pinned, or else unpin
 			if (dittoMessage.pinned && !ctx.TediCross.me.telegram.Message(telegramMessageId).pinned_message) {}
+			console.log(ctx.TediCross.me.telegram.MessageId(telegramMessageId));
+			console.log(ctx.TediCross.me.telegram.Message(telegramMessageId));
 
 			// Check non-deleted messages to make sure they still exist, or else delete
 			if (!dittoMessage.deleted && !ctx.TediCross.me.telegram.MessageId(telegramMessageId)) {
