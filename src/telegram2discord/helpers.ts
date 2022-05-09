@@ -46,7 +46,7 @@ export const deleteMessage = R.curry((ctx, { chat, message_id }) => ctx.telegram
  */
 export const updateMessages = R.curry(async (tgBot) => {
 	console.log("update");
-	const messageMap = tgBot.ctx.TediCross.messageMap;
+	const messageMap = tgBot.context.TediCross.messageMap;
 	let promisedTasks: Promise<any>[] = new Array();
 	R.forEach((bridge: any) => {
 		R.forEach((dittoMessage: any) => {
@@ -67,7 +67,7 @@ export const updateMessages = R.curry(async (tgBot) => {
 				promisedTasks.push(deleteMessage(bridge.telegram.chatId,telegramMessageId));
 			}
 		})(messageMap.getDittoMessageMapForBridge(bridge))
-	})(tgBot.ctx.TediCross.bridgeMap.bridges);
+	})(tgBot.context.TediCross.bridgeMap.bridges);
 
 	await Promise.all(promisedTasks);
 });
