@@ -44,9 +44,9 @@ export const deleteMessage = R.curry((ctx, { chat, message_id }) => ctx.telegram
  *
  * @returns Promise resolving when the messages are deleted or unpinned
  */
-export const updateMessages = R.curry(async (ctx) => {
+export const updateMessages = R.curry(async (tgBot) => {
 	console.log("update");
-	const messageMap = ctx.TediCross.messageMap;
+	const messageMap = tgBot.ctx.TediCross.messageMap;
 	let promisedTasks: Promise<any>[] = new Array();
 	R.forEach((bridge: any) => {
 		R.forEach((dittoMessage: any) => {
@@ -57,17 +57,17 @@ export const updateMessages = R.curry(async (ctx) => {
 			const telegramMessageId = dittoMessage.telegramMessageId;
 
 			// Check pinned messages to make sure they are still pinned, or else unpin
-			if (dittoMessage.pinned && !ctx.TediCross.me.telegram.Message(telegramMessageId).pinned_message) {}
-			console.log(ctx.TediCross.me.telegram.MessageId(telegramMessageId));
-			console.log(ctx.TediCross.me.telegram.Message(telegramMessageId));
+			if (dittoMessage.pinned && !tgBot.telegram.Message(telegramMessageId).pinned_message) {}
+			console.log(tgBot.telegram.MessageId(telegramMessageId));
+			console.log(tgBot.telegram.Message(telegramMessageId));
 
 			// Check non-deleted messages to make sure they still exist, or else delete
-			if (!dittoMessage.deleted && !ctx.TediCross.me.telegram.MessageId(telegramMessageId)) {
+			if (!dittoMessage.deleted && !tgBot.telegram.MessageId(telegramMessageId)) {
 				console.log(dittoMessage);
 				promisedTasks.push(deleteMessage(bridge.telegram.chatId,telegramMessageId));
 			}
 		})(messageMap.getDittoMessageMapForBridge(bridge))
-	})(ctx.TediCross.bridgeMap.bridges);
+	})(tgBot.ctx.TediCross.bridgeMap.bridges);
 
 	await Promise.all(promisedTasks);
 });
