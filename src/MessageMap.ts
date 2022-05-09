@@ -101,7 +101,7 @@ export class MessageMap {
 		if(this._map.size == 0) {
 			return [];
 		}
-		console.log(this._map.get(bridge));
+		console.log(this._map.get(bridge).values());
 		return this._map.get(bridge).values();
 	}
 
