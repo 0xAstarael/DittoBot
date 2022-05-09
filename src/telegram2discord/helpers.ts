@@ -50,6 +50,7 @@ export const updateMessages = R.curry(async (ctx) => {
 	let promisedTasks: Promise<any>[] = new Array();
 	R.forEach((bridge: any) => {
 		R.forEach((dittoMessage: any) => {
+			console.log(dittoMessage);
 			if (!dittoMessage || dittoMessage.direction == messageMap.DIRECTION_DISCORD_TO_TELEGRAM) {
 				return;
 			}
