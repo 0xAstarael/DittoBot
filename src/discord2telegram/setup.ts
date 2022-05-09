@@ -156,14 +156,12 @@ export function setup(
 				latestDiscordMessageIds.setLatest(message.id, bridge);
 
 				// Check if this is a reply
-				console.log(message);
 				const repliedDittoMessage = message.type == 'REPLY' ?
 					messageMap.getCorresponding(
 						MessageMap.DISCORD_TO_TELEGRAM,
 						bridge,
 						message.reference!.messageId!
 					) : null;
-				console.log(repliedDittoMessage);
 				const repliedTelegramMessageId = repliedDittoMessage ? parseInt(repliedDittoMessage.telegramMessageId) : 0;
 
 				// Check for attachments and pass them on
@@ -343,6 +341,8 @@ export function setup(
 				const tgMessageId = dittoMessage.telegramMessageId;
 
 				await tgBot.telegram.deleteMessage(bridge.telegram.chatId, tgMessageId);
+
+				dittoMessage.deleted = true;
 			} catch (err) {
 				logger.error(`[${bridge.name}] Could not delete Telegram message:`, err);
 				logger.warn(

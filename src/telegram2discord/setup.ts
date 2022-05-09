@@ -9,6 +9,7 @@ import { BridgeMap } from "../bridgestuff/BridgeMap";
 import { Settings } from "../settings/Settings";
 import * as telegraf from "telegraf";
 import { chatinfo, handleEdits, leftChatMember, newChatMembers, pinnedMessage, relayMessage, TediCrossContext } from "./endwares";
+import { updateMessages } from "./helpers";
 
 /***********
  * Helpers *
@@ -137,5 +138,9 @@ export function setup(
 		})
 		// Start getting updates
 		//@ts-ignore TODO: startPooling is a private method. Maybe use .launch() instead
-		.then(() => tgBot.startPolling());
+		.then(() => tgBot.startPolling())
+		// Start update interval for telegram side. Telegram APIs are really bad about deletes and unpins, so will need to manually check messages for them.
+		.then(() => setInterval(() => {
+			updateMessages(tgBot.context)
+		}, moment.duration(60, "seconds").asMilliseconds()));
 }

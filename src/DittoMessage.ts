@@ -11,6 +11,7 @@ export class DittoMessage {
     private _messageText: string | null;
 
     private _pinned: boolean;
+    private _deleted: boolean;
     private _reactions: Set<string>;
 
     private _referencedMessage: DittoMessage | null;
@@ -27,6 +28,7 @@ export class DittoMessage {
 		/** The message itself */
 		this._reactions = new Set();
         this._pinned = false;
+        this._deleted = false;
 
         this._direction = direction;
         this._discordMessageId = discordMessageId;
@@ -34,8 +36,6 @@ export class DittoMessage {
 
         this._messageText = messageText;
         this._referencedMessage = referencedMessage;
-
-        console.log(this);
 	}
 
 
@@ -43,8 +43,8 @@ export class DittoMessage {
         return this._pinned;
     }
 
-    set pinned(isPinned: boolean) {
-        this._pinned = isPinned;
+    get deleted(): boolean {
+        return this._deleted;
     }
 
     get discordMessageId(): string {
@@ -57,6 +57,18 @@ export class DittoMessage {
 
     get referencedMessage(): DittoMessage | null {
         return this._referencedMessage;
+    }
+
+    get direction(): string {
+        return this._direction;
+    }
+
+    set pinned(isPinned: boolean) {
+        this._pinned = isPinned;
+    }
+
+    set deleted(isDeleted: boolean) {
+        this._deleted = isDeleted;
     }
 
     set messageText(newMessage: string) {

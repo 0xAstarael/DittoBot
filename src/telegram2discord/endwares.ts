@@ -149,7 +149,6 @@ export const leftChatMember = createMessageHandler((ctx: TediCrossContext, bridg
 				bridge,
 				ctx.tediCross.message.pinned_message.message_id
 			);
-			console.log(dittoMessage);
 
 			if (!dittoMessage || dittoMessage.pinned) {
 				return;
@@ -163,8 +162,6 @@ export const leftChatMember = createMessageHandler((ctx: TediCrossContext, bridg
 			// Get the messageManager and message to pin
 			const messageManager = (await fetchDiscordChannel(ctx.TediCross.dcBot, bridge)).messages;
 			const message = await messageManager.fetch(dcMessageId);
-			console.log(dittoMessage);
-			//console.log(message);
 
 			// Pin it on Discord
 			const dp = messageManager.pin(message);
@@ -214,7 +211,6 @@ export const leftChatMember = createMessageHandler((ctx: TediCrossContext, bridg
 	) {
 		await pin(ctx, bridge);
 	} else {
-		console.log("unpin");
 		await unpin(ctx, bridge);
 	}
 });
@@ -247,7 +243,6 @@ export const relayMessage = (ctx: TediCrossContext) =>
 				prepared.bridge,
 				ctx.tediCross.repliedMessageId
 			);
-			console.log(repliedDittoMessage);
 
 			const repliedDiscordMessage = repliedDittoMessage ? await channel.messages.fetch(repliedDittoMessage.discordMessageId) : "0";
 
@@ -316,8 +311,6 @@ export const relayMessage = (ctx: TediCrossContext) =>
  * @param ctx	The Telegraf context
  */
 export const handleEdits = createMessageHandler(async (ctx: TediCrossContext, bridge: any) => {
-	console.log(ctx);
-
 	// Function to "delete" a message on Discord
 	const del = async (ctx: TediCrossContext, bridge: any) => {
 		try {

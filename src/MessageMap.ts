@@ -43,7 +43,6 @@ export class MessageMap {
 			// Create the opposite direction mapping
 			keyToDittoMessageMap.set(t2dKey, dittoMessageForKey);
 		}
-		console.log(keyToDittoMessageMap);
 
 		// Start a timeout removing it again after 24 hours
 		setTimeout(() => {
@@ -97,6 +96,10 @@ export class MessageMap {
 		return fromId;
 	}
 */
+
+	getDittoMessageMapForBridge(bridge: Bridge): Array<DittoMessage> {
+		return this._map.get(bridge).values();
+	}
 
 	/** Constant indicating direction discord to telegram */
 	static get DISCORD_TO_TELEGRAM(): "d2t" {
