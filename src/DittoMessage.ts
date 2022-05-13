@@ -23,6 +23,7 @@ export class DittoMessage {
 	 * @param discordMessageId Message ID in Discord
 	 * @param telegramMessageId	Message ID in Telegram
      * @param messageText displayed content of message
+     * @param referencedMessage referenced DittoMessage in reply (null if not a reply message)
 	 */
 	constructor(direction: Direction, discordMessageId: string, telegramMessageId: string, messageText: string | null, referencedMessage: DittoMessage | null) {
 		/** The message itself */

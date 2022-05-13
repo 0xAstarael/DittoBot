@@ -284,13 +284,6 @@ export const relayMessage = (ctx: TediCrossContext) =>
 				});
 			}
 
-			// Send the rest in serial
-			/*dcMessage = await R.reduce(
-				(p, chunk) => p.then(() => channel.send(chunk)),
-				Promise.resolve(dcMessage),
-				chunks
-			);*/
-
 			// Make the mapping so future edits can work XXX Only the last chunk is considered
 			ctx.TediCross.messageMap.insert(
 				MessageMap.TELEGRAM_TO_DISCORD,
