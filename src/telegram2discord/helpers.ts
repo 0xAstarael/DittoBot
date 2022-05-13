@@ -39,13 +39,13 @@ export const deleteMessage = R.curry((ctx, { chat, message_id }) => ctx.telegram
 
 /**
  * Updates all existing Telegram messages
+ * This currently is broken and limited by the Telegraf API. There is no way to fetch existing Telegram messages by messageId, so will need to either use a different package or wait until support is provided.
  *
  * @param ctx The Telegraf context to use
  *
  * @returns Promise resolving when the messages are deleted or unpinned
  */
 export const updateMessages = R.curry(async (tgBot) => {
-	console.log("update");
 	const messageMap = tgBot.context.TediCross.messageMap;
 	let promisedTasks: Promise<any>[] = new Array();
 	R.forEach((bridge: any) => {
@@ -58,14 +58,9 @@ export const updateMessages = R.curry(async (tgBot) => {
 
 			// Check pinned messages to make sure they are still pinned, or else unpin
 			if (dittoMessage.pinned && !tgBot.telegram.Message(telegramMessageId).pinned_message) {}
-			console.log(tgBot.telegram.MessageId(telegramMessageId));
-			console.log(tgBot.telegram.Message(telegramMessageId));
 
 			// Check non-deleted messages to make sure they still exist, or else delete
-			if (!dittoMessage.deleted && !tgBot.telegram.MessageId(telegramMessageId)) {
-				console.log(dittoMessage);
-				promisedTasks.push(deleteMessage(bridge.telegram.chatId,telegramMessageId));
-			}
+			if (!dittoMessage.deleted && !tgBot.telegram.MessageId(telegramMessageId)) {}
 		})(messageMap.getDittoMessageMapForBridge(bridge))
 	})(tgBot.context.TediCross.bridgeMap.bridges);
 
