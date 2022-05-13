@@ -141,7 +141,7 @@ export function setup(
 		//@ts-ignore TODO: startPooling is a private method. Maybe use .launch() instead
 		.then(() => tgBot.startPolling())
 		// Start update interval for telegram side. Telegram APIs are really bad about deletes and unpins, so will need to manually check messages for them.
-		.then(() => setInterval(() => {
-			updateMessages(tgBot)
-		}, moment.duration(5, "seconds").asMilliseconds()));
+		//.then(() => setInterval(() => {
+	//		updateMessages(tgBot)
+//		}, moment.duration(5, "seconds").asMilliseconds()));
 }
