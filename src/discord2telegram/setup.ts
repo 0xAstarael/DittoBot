@@ -284,6 +284,8 @@ export function setup(
 				);
 				const tgMessageId = dittoMessage.telegramMessageId;
 
+				console.log(dittoMessage);
+				console.log(newMessage);
 				// Check if this is a pin update
 				if (!dittoMessage.pinned && newMessage.pinned) {
 					tgBot.telegram.pinChatMessage(bridge.telegram.chatId, tgMessageId);
