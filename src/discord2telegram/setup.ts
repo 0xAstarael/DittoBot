@@ -1,5 +1,7 @@
+import moment from "moment";
 import { md2html } from "./md2html";
 import { MessageMap } from "../MessageMap";
+import { DittoMessage } from "../DittoMessage";
 import { LatestDiscordMessageIds } from "./LatestDiscordMessageIds";
 import { handleEmbed } from "./handleEmbed";
 import { relayOldMessages } from "./relayOldMessages";
@@ -153,6 +155,15 @@ export function setup(
 				// This is now the latest message for this bridge
 				latestDiscordMessageIds.setLatest(message.id, bridge);
 
+				// Check if this is a reply
+				const repliedDittoMessage = message.type == 'REPLY' ?
+					messageMap.getCorresponding(
+						MessageMap.DISCORD_TO_TELEGRAM,
+						bridge,
+						message.reference!.messageId!
+					) : null;
+				const repliedTelegramMessageId = repliedDittoMessage ? parseInt(repliedDittoMessage.telegramMessageId) : 0;
+
 				// Check for attachments and pass them on
 				message.attachments.forEach(async ({ url }) => {
 					try {
@@ -160,13 +171,17 @@ export function setup(
 							? `<b>${senderName}</b>\n<a href="${url}">${url}</a>`
 							: `<a href="${url}">${url}</a>`;
 						const tgMessage = await tgBot.telegram.sendMessage(bridge.telegram.chatId, textToSend, {
-							parse_mode: "HTML"
+							parse_mode: "HTML",
+							reply_to_message_id: repliedTelegramMessageId,
+							allow_sending_without_reply: true
 						});
 						messageMap.insert(
 							MessageMap.DISCORD_TO_TELEGRAM,
 							bridge,
 							message.id,
-							tgMessage.message_id.toString()
+							tgMessage.message_id.toString(),
+							textToSend,
+							repliedDittoMessage
 						);
 					} catch (err) {
 						logger.error(`[${bridge.name}] Telegram did not accept an attachment:`, err);
@@ -187,7 +202,9 @@ export function setup(
 						// Send it
 						tgBot.telegram.sendMessage(bridge.telegram.chatId, text, {
 							parse_mode: "HTML",
-							disable_web_page_preview: true
+							disable_web_page_preview: true,
+							reply_to_message_id: repliedTelegramMessageId,
+							allow_sending_without_reply: true
 						});
 					} catch (err) {
 						logger.error(`[${bridge.name}] Telegram did not accept an embed:`, err);
@@ -205,7 +222,9 @@ export function setup(
 							? `<b>${senderName}</b>\n${processedMessage}`
 							: processedMessage;
 						const tgMessage = await tgBot.telegram.sendMessage(bridge.telegram.chatId, textToSend, {
-							parse_mode: "HTML"
+							parse_mode: "HTML",
+							reply_to_message_id: repliedTelegramMessageId,
+							allow_sending_without_reply: true
 						});
 
 						// Make the mapping so future edits can work
@@ -213,7 +232,9 @@ export function setup(
 							MessageMap.DISCORD_TO_TELEGRAM,
 							bridge,
 							message.id,
-							tgMessage.message_id.toString()
+							tgMessage.message_id.toString(),
+							textToSend,
+							repliedDittoMessage
 						);
 					} catch (err) {
 						logger.error(`[${bridge.name}] Telegram did not accept a message:`, err);
@@ -247,20 +268,33 @@ export function setup(
 
 	// Listen for message edits
 	dcBot.on("messageUpdate", async (_oldMessage, newMessage) => {
-		// Don't do anything with the bot's own messages
-		if (newMessage.author?.id === dcBot.user?.id) {
-			return;
-		}
-
 		// Pass it on to the bridges
 		bridgeMap.fromDiscordChannelId(Number(newMessage.channel.id)).forEach(async bridge => {
 			try {
 				// Get the corresponding Telegram message ID
-				const [tgMessageId] = messageMap.getCorresponding(
+				const dittoMessage = messageMap.getCorresponding(
 					MessageMap.DISCORD_TO_TELEGRAM,
 					bridge,
 					newMessage.id
 				);
+				const tgMessageId = dittoMessage.telegramMessageId;
+
+				// Check if this is a pin update
+				if (!dittoMessage.pinned && newMessage.pinned) {
+					tgBot.telegram.pinChatMessage(bridge.telegram.chatId, tgMessageId);
+					dittoMessage.pinned = true;
+				}
+
+				// Check if this is an unpin update
+				if (dittoMessage.pinned && !newMessage.pinned) {
+					tgBot.telegram.unpinChatMessage(bridge.telegram.chatId, tgMessageId);
+					dittoMessage.pinned = false;
+				}
+
+				// Don't do anything else with the bot's own messages
+				if (newMessage.author?.id === dcBot.user?.id) {
+					return;
+				}
 
 				// Get info about the sender
 				const senderName =
@@ -277,6 +311,8 @@ export function setup(
 				await tgBot.telegram.editMessageText(bridge.telegram.chatId, tgMessageId, undefined, textToSend, {
 					parse_mode: "HTML"
 				});
+
+				dittoMessage.messageText = textToSend;
 			} catch (err) {
 				logger.error(`[${bridge.name}] Could not edit Telegram message:`, err);
 			}
@@ -296,16 +332,17 @@ export function setup(
 			}
 
 			try {
-				// Get the corresponding Telegram message IDs
-				const tgMessageIds = (
-					isFromTelegram
-						? messageMap.getCorrespondingReverse(MessageMap.DISCORD_TO_TELEGRAM, bridge, message.id)
-						: messageMap.getCorresponding(MessageMap.DISCORD_TO_TELEGRAM, bridge, message.id)
-				) as number[];
-				// Try to delete them
-				await Promise.all(
-					tgMessageIds.map(tgMessageId => tgBot.telegram.deleteMessage(bridge.telegram.chatId, tgMessageId))
+				// Get the corresponding Telegram message ID
+				const dittoMessage = messageMap.getCorresponding(
+					MessageMap.DISCORD_TO_TELEGRAM,
+					bridge,
+					message.id
 				);
+				const tgMessageId = dittoMessage.telegramMessageId;
+
+				await tgBot.telegram.deleteMessage(bridge.telegram.chatId, tgMessageId);
+
+				dittoMessage.deleted = true;
 			} catch (err) {
 				logger.error(`[${bridge.name}] Could not delete Telegram message:`, err);
 				logger.warn(

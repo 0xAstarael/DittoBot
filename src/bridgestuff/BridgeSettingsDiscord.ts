@@ -4,6 +4,7 @@ export interface BridgeSettingsDiscordProperties {
 	relayJoinMessages: boolean;
 	relayLeaveMessages: boolean;
 	crossDeleteOnTelegram: boolean;
+	crossPinOnTelegram: boolean;
 	serverId?: string;
 }
 
@@ -14,6 +15,7 @@ export class BridgeSettingsDiscord {
 	public relayJoinMessages: boolean;
 	public relayLeaveMessages: boolean;
 	public crossDeleteOnTelegram: boolean;
+	public crossPinOnTelegram: boolean;
 
 	/**
 	 * Creates a new BridgeSettingsDiscord object
@@ -42,6 +44,9 @@ export class BridgeSettingsDiscord {
 
 		/** Whether or not to delete messages on Telegram when a message is deleted on Discord */
 		this.crossDeleteOnTelegram = settings.crossDeleteOnTelegram;
+
+		/** Whether or not to delete messages on Telegram when a message is deleted on Discord */
+		this.crossPinOnTelegram = settings.crossPinOnTelegram;
 	}
 
 	/**
@@ -75,6 +80,11 @@ export class BridgeSettingsDiscord {
 		// Check that crossDeleteOnTelegram is a boolean
 		if (Boolean(settings.crossDeleteOnTelegram) !== settings.crossDeleteOnTelegram) {
 			throw new Error("`settings.crossDeleteOnTelegram` must be a boolean");
+		}
+
+		// Check that crossPinOnTelegram is a boolean
+		if (Boolean(settings.crossPinOnTelegram) !== settings.crossPinOnTelegram) {
+			throw new Error("`settings.crossPinOnTelegram` must be a boolean");
 		}
 	}
 }

@@ -16,4 +16,3 @@ export const fetchDiscordChannel = R.curry((dcBot: Client, bridge) => {
 		throw err;
 	}) as unknown as Promise<TextChannel>;
 });
-

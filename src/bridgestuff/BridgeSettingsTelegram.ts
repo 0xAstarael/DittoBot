@@ -5,6 +5,7 @@ export interface BridgeSettingsTelegramProperties {
 	relayJoinMessages: boolean;
 	relayLeaveMessages: boolean;
 	crossDeleteOnDiscord: boolean;
+	crossPinOnDiscord: boolean;
 	ignoreCommands?: boolean;
 }
 
@@ -15,6 +16,7 @@ export class BridgeSettingsTelegram {
 	public relayJoinMessages: boolean;
 	public relayLeaveMessages: boolean;
 	public crossDeleteOnDiscord: boolean;
+	public crossPinOnDiscord: boolean;
 	public relayCommands: boolean;
 
 	/**
@@ -46,6 +48,9 @@ export class BridgeSettingsTelegram {
 
 		/** Whether or not to delete messages when they are edited to be a single dot */
 		this.crossDeleteOnDiscord = settings.crossDeleteOnDiscord;
+
+		/** Whether or not to pin or unpin messages in Discord when they are pinned or unpinned in Telegram */
+		this.crossPinOnDiscord = settings.crossPinOnDiscord;
 	}
 
 	/**
@@ -84,6 +89,11 @@ export class BridgeSettingsTelegram {
 		// Check that crossDeleteOnDiscord is a boolean
 		if (Boolean(settings.crossDeleteOnDiscord) !== settings.crossDeleteOnDiscord) {
 			throw new Error("`settings.crossDeleteOnDiscord` must be a boolean");
+		}
+
+		// Check that crossPinOnDiscord is a boolean
+		if (Boolean(settings.crossPinOnDiscord) !== settings.crossPinOnDiscord) {
+			throw new Error("`settings.crossPinOnDiscord` must be a boolean");
 		}
 	}
 }

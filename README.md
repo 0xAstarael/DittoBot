@@ -72,11 +72,13 @@ As mentioned in the step by step installation guide, there is a settings file. H
 	* `telegram.sendUsernames`: Whether or not to send the sender's name with the messages to Discord
 	* `telegram.relayCommands`: If set to `false`, messages starting with a `/` are not relayed to Discord
 	* `telegram.crossDeleteOnDiscord`: Whether or not to also delete the corresponding message on Discord when one is deleted on Telegram. **NOTE**: See FAQ about deleting messages.
+	* `telegram.crossPinOnDiscord`: Whether or not to also pin or unpin the corresponding message on Discord when one is pinned or unpinned on Telegram.
 	* `discord.channelId`: ID of the channel the Discord end of the bridge is in. See step 11 on how to aquire it
 	* `discord.relayJoinMessages`: Whether or not to relay messages to Telegram about people joining the Discord chat
 	* `discord.relayLeaveMessages`: Whether or not to relay messages to Telegram about people leaving the Discord chat
 	* `discord.sendUsernames`: Whether or not to send the sender's name with the messages to Telegram
 	* `discord.crossDeleteOnTelegram`: Whether or not to also delete the corresponding message on Telegram when one is deleted in Discord
+	* `discord.crossPinOnTelegram`: Whether or not to also pin the corresponding message on Telegram when one is pinned in Discord
 
 The available settings will occasionally change. The bot takes care of this automatically
 

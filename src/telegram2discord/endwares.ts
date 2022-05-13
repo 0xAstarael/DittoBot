@@ -1,11 +1,12 @@
 import R from "ramda";
 import { MessageMap } from "../MessageMap";
+import { DittoMessage } from "../DittoMessage";
 import { sleepOneMinute } from "../sleep";
 import { fetchDiscordChannel } from "../fetchDiscordChannel";
 import { Context } from "telegraf";
 import { deleteMessage, ignoreAlreadyDeletedError } from "./helpers";
 import { createFromObjFromUser } from "./From";
-import { MessageEditOptions } from "discord.js";
+import { MessageEditOptions, MessageResolvable } from "discord.js";
 import { Message, User } from "telegraf/typings/core/types/typegram";
 
 export interface TediCrossContext extends Context {
@@ -21,7 +22,7 @@ export interface TediCrossContext extends Context {
 		messageId: string;
 		prepared: any;
 		bridges: any;
-		replyTo: any;
+		repliedMessageId: any;
 		text: any;
 		forwardFrom: any;
 		from: any;
@@ -132,6 +133,89 @@ export const leftChatMember = createMessageHandler((ctx: TediCrossContext, bridg
 });
 
 /**
+ * Handles message being pinned
+ *
+ * @param ctx The Telegraf context
+ * @param ctx.tediCross The TediCross context of the message
+ * @param ctx.tediCross.message The Telegram message pinned
+ * @param ctx.TediCross The global TediCross context of the message
+ */
+ export const pinnedMessage = createMessageHandler(async (ctx: TediCrossContext, bridge: any) => {
+	const pin = async (ctx: TediCrossContext, bridge: any) => {
+		try {
+			// Find the ID of this message on Discord
+			const dittoMessage = ctx.TediCross.messageMap.getCorresponding(
+				MessageMap.TELEGRAM_TO_DISCORD,
+				bridge,
+				ctx.tediCross.message.pinned_message.message_id
+			);
+
+			if (!dittoMessage || dittoMessage.pinned) {
+				return;
+			}
+
+			const dcMessageId = dittoMessage.discordMessageId;
+
+			// Wait for the Discord bot to become ready
+			await ctx.TediCross.dcBot.ready;
+
+			// Get the messageManager and message to pin
+			const messageManager = (await fetchDiscordChannel(ctx.TediCross.dcBot, bridge)).messages;
+			const message = await messageManager.fetch(dcMessageId);
+
+			// Pin it on Discord
+			const dp = messageManager.pin(message);
+
+			await Promise.all([dp]);
+
+			dittoMessage.pinned = true;
+		} catch (err: any) {
+			console.error(
+				`Could not cross-pin message from Telegram to Discord on bridge ${bridge.name}: ${err.message}`
+			);
+		}
+	};
+
+	const unpin = async (ctx: TediCrossContext, bridge: any) => {
+		try {
+			// Find the ID of this message on Discord
+			const dittoMessage = ctx.TediCross.messageMap.getCorresponding(
+				MessageMap.TELEGRAM_TO_DISCORD,
+				bridge,
+				ctx.tediCross.message.pinned_message.message_id
+			);
+			const dcMessageId = dittoMessage.discordMessageId;
+
+			// Wait for the Discord bot to become ready
+			await ctx.TediCross.dcBot.ready;
+
+			// Get the messageManager and message to unpin
+			const messageManager = (await fetchDiscordChannel(ctx.TediCross.dcBot, bridge)).messages;
+			const message = await messageManager.fetch(dcMessageId);
+
+			// Unpin it on Discord
+			const dp = messageManager.unpin(message);
+
+			await Promise.all([dp]);
+		} catch (err: any) {
+			console.error(
+				`Could not cross-unpin message from Telegram to Discord on bridge ${bridge.name}: ${err.message}`
+			);
+		}
+	};
+
+	// Check whether this is a pinned or unpinned message
+	if (
+		bridge.telegram.crossPinOnDiscord &&
+		ctx.tediCross.message.pinned_message
+	) {
+		await pin(ctx, bridge);
+	} else {
+		await unpin(ctx, bridge);
+	}
+});
+
+/**
  * Relays a message from Telegram to Discord
  *
  * @param ctx The Telegraf context
@@ -144,6 +228,8 @@ export const relayMessage = (ctx: TediCrossContext) =>
 			// Discord doesn't handle messages longer than 2000 characters. Split it up into chunks that big
 			const messageText = prepared.header + "\n" + prepared.text;
 			let chunks = R.splitEvery(2000, messageText);
+			let headChunk = R.head(chunks) || "";
+			let displayChunk = headChunk.length > 1985 ? headChunk.slice(0,-15).concat('...truncated...') : headChunk;
 
 			// Wait for the Discord bot to become ready
 			await ctx.TediCross.dcBot.ready;
@@ -151,38 +237,61 @@ export const relayMessage = (ctx: TediCrossContext) =>
 			// Get the channel to send to
 			const channel = await fetchDiscordChannel(ctx.TediCross.dcBot, prepared.bridge);
 
+			// Check if message is a reply
+			const repliedDittoMessage = ctx.TediCross.messageMap.getCorresponding(
+				MessageMap.TELEGRAM_TO_DISCORD,
+				prepared.bridge,
+				ctx.tediCross.repliedMessageId
+			);
+
+			const repliedDiscordMessage = repliedDittoMessage ? await channel.messages.fetch(repliedDittoMessage.discordMessageId) : "0";
+
 			let dcMessage = null;
 			// Send the attachment first, if there is one
 			if (!R.isNil(prepared.file)) {
 				try {
 					dcMessage = await channel.send({
-						content: R.head(chunks),
-						files: [prepared.file]
+						content: displayChunk,
+						files: [prepared.file],
+						reply: {
+							messageReference: repliedDiscordMessage,
+							failIfNotExists: false
+						}
 					});
 					chunks = R.tail(chunks);
 				} catch (err: any) {
 					if (err.message === "Request entity too large") {
-						dcMessage = await channel.send(
-							`***${prepared.senderName}** on Telegram sent a file, but it was too large for Discord. If you want it, ask them to send it some other way*`
+						dcMessage = await channel.send({
+							content: `***${prepared.senderName}** on Telegram sent a file, but it was too large for Discord. If you want it, ask them to send it some other way*`,
+							reply: {
+								messageReference: repliedDiscordMessage,
+								failIfNotExists: false
+							}
+						}
 						);
 					} else {
 						throw err;
 					}
 				}
 			}
-			// Send the rest in serial
-			dcMessage = await R.reduce(
-				(p, chunk) => p.then(() => channel.send(chunk)),
-				Promise.resolve(dcMessage),
-				chunks
-			);
+			else {
+				dcMessage = await channel.send({
+					content: displayChunk,
+					reply: {
+						messageReference: repliedDiscordMessage,
+						failIfNotExists: false
+					}
+				});
+			}
 
 			// Make the mapping so future edits can work XXX Only the last chunk is considered
 			ctx.TediCross.messageMap.insert(
 				MessageMap.TELEGRAM_TO_DISCORD,
 				prepared.bridge,
 				ctx.tediCross.messageId,
-				dcMessage?.id
+				dcMessage.id,
+				messageText,
+				repliedDittoMessage
 			);
 		} catch (err: any) {
 			console.error(`Could not relay a message to Discord on bridge ${prepared.bridge.name}: ${err.message}`);
@@ -199,11 +308,13 @@ export const handleEdits = createMessageHandler(async (ctx: TediCrossContext, br
 	const del = async (ctx: TediCrossContext, bridge: any) => {
 		try {
 			// Find the ID of this message on Discord
-			const [dcMessageId] = ctx.TediCross.messageMap.getCorresponding(
+			const dittoMessage = ctx.TediCross.messageMap.getCorresponding(
 				MessageMap.TELEGRAM_TO_DISCORD,
 				bridge,
 				ctx.tediCross.message.message_id
 			);
+			const dcMessageId = dittoMessage.discordMessageId;
+
 
 			// Get the channel to delete on
 			const channel = await fetchDiscordChannel(ctx.TediCross.dcBot, bridge);
@@ -228,11 +339,12 @@ export const handleEdits = createMessageHandler(async (ctx: TediCrossContext, br
 			const tgMessage = ctx.tediCross.message;
 
 			// Find the ID of this message on Discord
-			const [dcMessageId] = ctx.TediCross.messageMap.getCorresponding(
+			const dittoMessage = ctx.TediCross.messageMap.getCorresponding(
 				MessageMap.TELEGRAM_TO_DISCORD,
 				bridge,
-				tgMessage.message_id
+				ctx.tediCross.message.message_id
 			);
+			const dcMessageId = dittoMessage.discordMessageId;
 
 			// Wait for the Discord bot to become ready
 			await ctx.TediCross.dcBot.ready;
@@ -248,6 +360,8 @@ export const handleEdits = createMessageHandler(async (ctx: TediCrossContext, br
 
 				// Send them in serial, with the attachment first, if there is one
 				await dcMessage.edit({ content: messageText, attachment: prepared.attachment } as MessageEditOptions);
+
+				dittoMessage.messageText = messageText;
 			})(ctx.tediCross.prepared);
 		} catch (err: any) {
 			// Log it

@@ -1,3 +1,4 @@
+import moment from "moment";
 import R from "ramda";
 import middlewares from "./middlewares";
 import { sleep } from "../sleep";
@@ -8,7 +9,8 @@ import { MessageMap } from "../MessageMap";
 import { BridgeMap } from "../bridgestuff/BridgeMap";
 import { Settings } from "../settings/Settings";
 import * as telegraf from "telegraf";
-import { chatinfo, handleEdits, leftChatMember, newChatMembers, relayMessage, TediCrossContext } from "./endwares";
+import { chatinfo, handleEdits, leftChatMember, newChatMembers, pinnedMessage, relayMessage, TediCrossContext } from "./endwares";
+import { updateMessages } from "./helpers";
 
 /***********
  * Helpers *
@@ -111,7 +113,7 @@ export function setup(
 			tgBot.on("new_chat_members", newChatMembers);
 			tgBot.on("left_chat_member", leftChatMember);
 			tgBot.use(middlewares.addFromObj);
-			tgBot.use(middlewares.addReplyObj);
+			tgBot.use(middlewares.addRepliedMessageId);
 			tgBot.use(middlewares.addForwardFrom);
 			tgBot.use(middlewares.addTextObj);
 			tgBot.use(middlewares.addFileObj);
@@ -119,6 +121,7 @@ export function setup(
 			tgBot.use(middlewares.addPreparedObj);
 
 			// Apply endwares
+			tgBot.on("pinned_message", pinnedMessage);
 			tgBot.on(["edited_message", "edited_channel_post"], handleEdits);
 			tgBot.use(relayMessage as any);
 
@@ -136,5 +139,10 @@ export function setup(
 		})
 		// Start getting updates
 		//@ts-ignore TODO: startPooling is a private method. Maybe use .launch() instead
-		.then(() => tgBot.startPolling());
+		.then(() => tgBot.startPolling())
+		// Start update interval for telegram side. Telegram APIs are really bad about deletes and unpins, so will need to manually check messages for them.
+		// This is currently broken due to limitations on the Telegraf API, so will not be using until updates are provided upstream.
+		// .then(() => setInterval(() => {
+		// 	updateMessages(tgBot)
+		// }, moment.duration(5, "seconds").asMilliseconds()));
 }

@@ -155,6 +155,13 @@ export class Settings {
 			}
 		}
 
+		// 2022-05-07: Added `bridge.telegram.crossPinOnDiscord` option
+		for (const bridge of settings.bridges) {
+			if (R.isNil(bridge.telegram.crossPinOnDiscord)) {
+				bridge.telegram.crossPinOnDiscord = true;
+			}
+		}
+
 		// All done!
 		return settings;
 	}
