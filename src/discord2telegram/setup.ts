@@ -268,11 +268,6 @@ export function setup(
 
 	// Listen for message edits
 	dcBot.on("messageUpdate", async (_oldMessage, newMessage) => {
-		// Don't do anything with the bot's own messages
-		if (newMessage.author?.id === dcBot.user?.id) {
-			return;
-		}
-
 		// Pass it on to the bridges
 		bridgeMap.fromDiscordChannelId(Number(newMessage.channel.id)).forEach(async bridge => {
 			try {
@@ -296,6 +291,11 @@ export function setup(
 				if (dittoMessage.pinned && !newMessage.pinned) {
 					tgBot.telegram.unpinChatMessage(bridge.telegram.chatId, tgMessageId);
 					dittoMessage.pinned = false;
+				}
+
+				// Don't do anything else with the bot's own messages
+				if (newMessage.author?.id === dcBot.user?.id) {
+					return;
 				}
 
 				// Get info about the sender
